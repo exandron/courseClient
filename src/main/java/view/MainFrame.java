@@ -35,7 +35,7 @@ public class MainFrame extends JFrame{
             clientSocket = new Socket("127.0.0.1", 2626);
             output = new ObjectOutputStream(clientSocket.getOutputStream());
             input = new ObjectInputStream(clientSocket.getInputStream());
-            System.out.println("клиент подключлся");
+            System.out.println("Клиент подключился.");
         }
         catch (Exception ex){
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
@@ -106,16 +106,16 @@ public class MainFrame extends JFrame{
                             JOptionPane.showMessageDialog(null, "Неправильно введён логин/пароль!", "Ошибка", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
-                        else if(user.getRole().equals("Admin")) {
+                        else if(user.getRole().equals("admin")) {
                             new AdminFrame(user.getId()).setVisible(true);
                             dispose();
 //                            JOptionPane.showMessageDialog(null, "Админ выполнил вход");
 //                            System.out.println("Admin");
                         }
-//                        else if(user.getRole().equals("Student")){
-//                            new UserFrame(user.getId()).setVisible(true);
-//                            dispose();
-//                        }
+                        else if(user.getRole().equals("student")){
+                            new StudentFrame(user.getId()).setVisible(true);
+                            dispose();
+                        }
 //                        else if(user.getRole().equals("doctor")){
 //                            new DoctorFrame(user.getId()).setVisible(true);
 //                            dispose();

@@ -5,52 +5,45 @@ import java.io.Serializable;
 public class Student extends User implements Serializable {
     private static final long serialVersionUID = -2501496011985171453L;
     private int id;
-    private String surname;
-    private String name;
-    private String patronymic;
-    private String phone_number;
+
     private String DOB;
     private int formOfEducation;
     private String address;
+    private int numberOfGroup;
 
-    public String getSurname() {
-        return surname;
+    private int groupId;
+
+    private int facultyId;
+
+    private String facultyName;
+    private int specialityId;
+    private String specialityName;
+
+    public Student() {
+        this.id = -1;
+        this.DOB = "";
+        this.formOfEducation = -1;
+        this.address = "";
+        this.groupId = -1;
+        this.numberOfGroup = -1;
+        this.facultyId = -1;
+        this.facultyName = "";
+        this.specialityId = -1;
+        this.specialityName = "";
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPatronymic() {
-        return patronymic;
-    }
-
-    public void setPatronymic(String patronymic) {
-        this.patronymic = patronymic;
-    }
-
-    public String getPhone_number() {
-        return phone_number;
-    }
-
-    public void setPhone_number(String phone_number) {
-        this.phone_number = phone_number;
-    }
-
-    public String  getDOB() {
-        return DOB;
-    }
-
-    public void setDOB(String DOB) {
+    public Student(int person_id, String surname, String name, String patronymic, String phone, String email, int user_id, String login, String password, String role, int id, String DOB, int formOfEducation, String address, int groupId, int numberOfGroup, int facultyId, String facultyName, int specialityId, String specialityName) {
+        super(person_id, surname, name, patronymic, phone, email, user_id, login, password, role);
+        this.id = id;
         this.DOB = DOB;
+        this.formOfEducation = formOfEducation;
+        this.address = address;
+        this.groupId = groupId;
+        this.numberOfGroup = numberOfGroup;
+        this.facultyId = facultyId;
+        this.facultyName = facultyName;
+        this.specialityId = specialityId;
+        this.specialityName = specialityName;
     }
 
     public int getFormOfEducation() {
@@ -69,71 +62,6 @@ public class Student extends User implements Serializable {
         this.address = address;
     }
 
-    public Student() {
-        this.id = -1;
-        this.name = "";
-        this.surname = "";
-        this.patronymic = "";
-        this.phone_number = "";
-        this.DOB = "";
-        this.formOfEducation = -1;
-        this.address = "";
-    }
-    public Student(int id,  String name,String surname, String patronymic, String phone_number, String DOB, int formOfEducation, String address) {
-        this.id = id;
-        this.surname = surname;
-        this.name = name;
-        this.patronymic = patronymic;
-        this.phone_number = phone_number;
-        this.DOB = DOB;
-        this.formOfEducation = formOfEducation;
-        this.address = address;
-    }
-
-    public Student(int user_id, String login, String password, String role,
-                 String name, String surname, String patronymic, String phone_number, String DOB, int formOfEducation, String address,
-                 int student_id){
-        setUserId(user_id);
-        setLogin(login);
-        setPassword(password);
-        setRole(role);
-        if(name == null) name="";
-        setName(name);
-        if(surname == null) surname="";
-        setSurname(surname);
-        if(patronymic == null) patronymic="";
-        setPatronymic(patronymic);
-        if(phone_number == null) phone_number="";
-        setPhone_number(phone_number);
-        if(DOB == null) DOB="";
-        setDOB(DOB);
-        if(formOfEducation == -1) formOfEducation=-1;
-        setFormOfEducation(formOfEducation);
-        if(address == null) address="";
-        setAddress(address);
-        this.id = student_id;
-    }
-
-
-    public Student (Student student) {
-        this.id = student.getId();
-        setUserId(student.getUserId());
-        setLogin(student.getLogin());
-        setPassword(student.getPassword());
-        setRole(student.getRole());
-        setSurname(student.getSurname());
-        setName(student.getName());
-        setPatronymic(student.getPatronymic());
-        setPhone_number(student.getPhone_number());
-        setDOB(student.getDOB());
-        setFormOfEducation(student.getFormOfEducation());
-        setAddress(student.getAddress());
-    }
-
-    public Student(int id, int user_id) {
-        this.id = id;
-    }
-
     @Override
     public int getId() {
         return id;
@@ -144,9 +72,63 @@ public class Student extends User implements Serializable {
         this.id = id;
     }
 
+    public String getDOB() {
+        return DOB;
+    }
+
+    public void setDOB(String DOB) {
+        this.DOB = DOB;
+    }
+
     public int getUserId() {return super.getId(); }
 
     public void setUserId(int id) { super.setId(id); }
 
+    public int getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
+    }
+
+    public int getNumberOfGroup() {
+        return numberOfGroup;
+    }
+
+    public void setNumberOfGroup(int numberOfGroup) {
+        this.numberOfGroup = numberOfGroup;
+    }
+    public int getFacultyId() {
+        return facultyId;
+    }
+
+    public void setFacultyId(int facultyId) {
+        this.facultyId = facultyId;
+    }
+
+    public String getFacultyName() {
+        return facultyName;
+    }
+
+    public void setFacultyName(String facultyName) {
+        this.facultyName = facultyName;
+    }
+
+    public int getSpecialityId() {
+        return specialityId;
+    }
+
+    public void setSpecialityId(int specialityId) {
+        this.specialityId = specialityId;
+    }
+
+    public String getSpecialityName() {
+        return specialityName;
+    }
+
+    public void setSpecialityName(String specialityName) {
+        this.specialityName = specialityName;
+    }
 
 }

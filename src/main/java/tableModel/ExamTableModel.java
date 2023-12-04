@@ -1,6 +1,6 @@
 package tableModel;
 
-import model.Admin;
+import model.Exam;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -8,48 +8,50 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class AdminTableModel implements TableModel {
-
+public class ExamTableModel implements TableModel{
     private Set<TableModelListener> listeners = new HashSet<TableModelListener>();
 
-    private List<Admin> admins;
+    private List<Exam> exams;
 
-    public AdminTableModel(List<Admin> admins){
-        this.admins = admins;
+
+    public ExamTableModel(List<Exam> exams){
+        this.exams = exams;
     }
+
+//    public String getSurname(Visits visit){
+//        for (int i = 0; i < clients.size(); i++) {
+//            if (visit.getClient_id() == clients.get(i).getId()) {
+//                return clients.get(i).getSurname();
+//            }
+//        }
+//        return "";
+//    }
+
 
 
     @Override
     public int getRowCount() {
-        return admins.size();
+        return exams.size();
     }
 
     @Override
     public int getColumnCount() {
-        return 9;
+        return 5;
     }
 
     @Override
     public String getColumnName(int columnIndex) {
         switch (columnIndex) {
             case 0:
-                return "ID";
+                return "Предмет";
             case 1:
-                return "Фамилия";
+                return "Оценка";
             case 2:
-                return "Имя";
+                return "Дата экзамена";
             case 3:
-                return "Отчество";
+                return "Преподаватель";
             case 4:
-                return "Логин";
-            case 5:
-                return "Телефон";
-            case 6:
-                return "Почта";
-            case 7:
-                return "Права доступа";
-            case 8:
-                return "Блокировка";
+                return "Семестр";
         }
         return "";
     }
@@ -57,15 +59,11 @@ public class AdminTableModel implements TableModel {
     @Override
     public Class<?> getColumnClass(int columnIndex) {
         switch (columnIndex) {
-            case 0: return Integer.class;
-            case 1: return String.class;
+            case 0: return String.class;
+            case 1: return Integer.class;
             case 2: return String.class;
             case 3: return String.class;
-            case 4: return String.class;
-            case 5: return String.class;
-            case 6: return String.class;
-            case 7: return String.class;
-            case 8: return String.class;
+            case 4: return Integer.class;
             default: return Object.class;
         }
     }
@@ -77,26 +75,23 @@ public class AdminTableModel implements TableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Admin admin = admins.get(rowIndex);
+        Exam exam = exams.get(rowIndex);
         switch (columnIndex){
             case 0:
-                return admin.getUserId();
+//                return visit.getDate();
+                return exam.getSubject();
             case 1:
-                return admin.getSurname();
+ //               return visit.getTime();
+                return exam.getGrade();
             case 2:
-                return admin.getName();
+ //               return visit.getRegistrationDate();
+                return exam.getDate();
             case 3:
-                return admin.getPatronymic();
+ //               return getSurname(visit);
+                return exam.getTeacher();
             case 4:
-                return admin.getLogin();
-            case 5:
-                return admin.getPhone();
-            case 6:
-                return admin.getEmail();
-            case 7:
-                return admin.getRights();
-            case 8:
-                return admin.getBlock();
+ //               return visit.getComment();
+                return exam.getSemester();
         }
         return null;
     }
@@ -116,7 +111,4 @@ public class AdminTableModel implements TableModel {
         listeners.remove(listener);
     }
 
-    public void addRow(Admin admin){
-        admins.add(admin);
-    }
 }

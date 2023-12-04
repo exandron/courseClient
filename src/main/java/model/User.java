@@ -2,13 +2,13 @@ package model;
 
 import java.io.Serializable;
 
-public class User implements Serializable{
+public class User extends Person implements Serializable {
     private static final long serialVersionUID = -2401496011985171453L;
     private int id;
     private String login;
     private String password;
     private String role;
-    //private String work_phone;
+
 
     public User(){
         super();
@@ -16,25 +16,29 @@ public class User implements Serializable{
         this.login = "";
         this.password = "";
         this.role = "";
-        //this.work_phone = "";
     }
 
-    public User(int user_id, String login, String password, String role){
+    public User(int person_id, String surname, String name, String patronymic, String phone, String email, int user_id, String login, String password, String role){
+        super(person_id, surname, name, patronymic, phone, email);
         this.id = user_id;
         this.login = login;
         this.password = password;
         this.role = role;
-        //if(work_phone == null) work_phone = "";
-       // this.work_phone = work_phone;
     }
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
+
+    public int getPersonId() { return super.getId(); }
+
+    public void setPersonId(int id) { super.setId(id);}
 
     public String getLogin() {
         return login;
@@ -60,11 +64,4 @@ public class User implements Serializable{
         this.role = role;
     }
 
-//    public String getWork_phone() {
-//        return work_phone;
-//    }
-//
-//    public void setWork_phone(String work_phone) {
-//        this.work_phone = work_phone;
-//    }
 }

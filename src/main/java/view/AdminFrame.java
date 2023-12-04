@@ -3,9 +3,11 @@ package view;
 import model.Admin;
 //import model.Doctor;
 import model.Student;
+import model.Teacher;
 import model.User;
 import tableModel.AdminTableModel;
 import tableModel.StudentTableModel;
+import tableModel.TeacherTableModel;
 //import org.jfree.data.category.DefaultCategoryDataset;
 //import tableModel.AdminTableModel;
 //import tableModel.DoctorTableModel;
@@ -128,14 +130,18 @@ public class AdminFrame extends JFrame{
     private JComboBox saOut;
     private JComboBox suIn;
     private JComboBox suOut;
+    private JTextField myRightsField;
+    private JTextField myBlockField;
+    private JComboBox editAdminRightsComboBox;
+    private JComboBox editAdminBlockComboBox;
     private ArrayList<Admin> admins = new ArrayList<>();
-    private ArrayList<User> users = new ArrayList<>();
+    private ArrayList<Teacher> teachers = new ArrayList<>();
     private ArrayList<Student> students = new ArrayList<>();
     private ObjectOutputStream output = MainFrame.output;
     private ObjectInputStream input = MainFrame.input;
     private int USER_ID;
-//    private String rights;
-//    private String block;
+    private String rights;
+    private String block;
 
     //-------------------------------ИНИЦИАЛИЗАЦИЯ ФРЕЙМА-------------------------------
 
@@ -150,20 +156,22 @@ public class AdminFrame extends JFrame{
         TableModel adminsModel = new AdminTableModel(admins);
         tableAdmins.setModel(adminsModel);
         tableAdmins.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-//        TableModel usersModel = new UserTableModel(users);
-//        tableUsers.setModel(usersModel);
-//        tableUsers.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+
+        TableModel teachersModel = new TeacherTableModel(teachers);
+        tableUsers.setModel(teachersModel);
+        tableUsers.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+
         TableModel studentsModel = new StudentTableModel(students);
         tableDoctors.setModel(studentsModel);
         tableDoctors.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         pack();
         setLocationRelativeTo(null);
-//        for (int i = 0; i < admins.size(); i++) {
-//            if (USER_ID == admins.get(i).getUserId()) {
-//                rights = admins.get(i).getRights();
-//                block = admins.get(i).getBlock();
-//            }
-//        }
+        for (int i = 0; i < admins.size(); i++) {
+            if (USER_ID == admins.get(i).getUserId()) {
+                rights = admins.get(i).getRights();
+                block = admins.get(i).getBlock();
+            }
+        }
     }
 
 
@@ -175,8 +183,8 @@ public class AdminFrame extends JFrame{
         initComponents();
 
         closeFrameButton.addActionListener(e -> closeFrameActionPerformed());
-        //editMyPersonalDataButton.addActionListener(e -> editMyPersonalDataActionPerformed());
-        //editMyAuthorizationDataButton.addActionListener(e -> editMyAuthorizationDataActionPerformed());
+        editMyPersonalDataButton.addActionListener(e -> editMyPersonalDataActionPerformed());
+        editMyAuthorizationDataButton.addActionListener(e -> editMyAuthorizationDataActionPerformed());
         tableAdmins.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -224,12 +232,12 @@ public class AdminFrame extends JFrame{
 
     //-------------------------------ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ-------------------------------
 
-//    private void isBlock(){
-//        if(block.equals("Да")) {
-//            JOptionPane.showMessageDialog(null, "Ваша учетная запись заблокирована!", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//            closeFrameActionPerformed();
-//        }
-//    }
+    private void isBlock(){
+        if(block.equals("Да")) {
+            JOptionPane.showMessageDialog(null, "Ваша учетная запись заблокирована!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            closeFrameActionPerformed();
+        }
+    }
 
 
     public void readData(){
@@ -242,18 +250,17 @@ public class AdminFrame extends JFrame{
                     mySurnameField.setText(admin.getSurname());
                     myNameField.setText(admin.getName());
                     myLastnameField.setText(admin.getPatronymic());
-                    myPhoneField.setText(admin.getPhoneNumber());
+                    myPhoneField.setText(admin.getPhone());
                     myEmailField.setText(admin.getEmail());
-                    //myWorkPhoneField.setText(admin.getWork_phone());
                     myLoginField.setText(admin.getLogin());
                     myPasswordField1.setText(admin.getPassword());
                     myPasswordField2.setText(admin.getPassword());
-//                    myRightsField.setText(admin.getRights());
-//                    myBlockField.setText(admin.getBlock());
+                    myRightsField.setText(admin.getRights());
+                    myBlockField.setText(admin.getBlock());
                 }
             }
- //           output.writeObject("getAllUsers");
- //           this.users = (ArrayList<User>) input.readObject();
+            output.writeObject("getAllTeachers");
+            this.teachers = (ArrayList<Teacher>) input.readObject();
             output.writeObject("getAllStudents");
             this.students = (ArrayList<Student>) input.readObject();
         }
@@ -264,21 +271,21 @@ public class AdminFrame extends JFrame{
 
     public void refreshData(){
         admins.clear();
-        users.clear();
+        teachers.clear();
         students.clear();
         readData();
         TableModel adminsModel = new AdminTableModel(admins);
         tableAdmins.setModel(adminsModel);
-//        TableModel usersModel = new UserTableModel(users);
-//        tableUsers.setModel(usersModel);
+        TableModel usersModel = new TeacherTableModel(teachers);
+        tableUsers.setModel(usersModel);
         TableModel studentsModel = new StudentTableModel(students);
         tableDoctors.setModel(studentsModel);
     }
 
     public void clearEditAndPasswordForm(){
         editAdminLoginField.setText("");
-//        editAdminRightsComboBox.setSelectedIndex(0);
-//        editAdminBlockComboBox.setSelectedIndex(0);
+        editAdminRightsComboBox.setSelectedIndex(0);
+        editAdminBlockComboBox.setSelectedIndex(0);
         editAdminSurnameField.setText("");
         editAdminNameField.setText("");
         editAdminLastnameField.setText("");
@@ -340,8 +347,8 @@ public class AdminFrame extends JFrame{
                     return false;
                 }
             }
-            for (int i = 0; i < users.size(); i++) {
-                if (login.equals(users.get(i).getLogin())) {
+            for (int i = 0; i < teachers.size(); i++) {
+                if (login.equals(teachers.get(i).getLogin())) {
                     JOptionPane.showMessageDialog(null, "Данный логин уже есть в системе!", "Ошибка", JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
@@ -380,102 +387,102 @@ public class AdminFrame extends JFrame{
         dispose();
     }
 
-//    private void editMyPersonalDataActionPerformed(){
-//        if(mySurnameField.isEditable()) {
-//            try {
-//                User user = new User();
-//                user.setId(USER_ID);
-//                user.setSurname(mySurnameField.getText());
-//                user.setName(myNameField.getText());
-//                user.setLastname(myLastnameField.getText());
-//                user.setPhone(myPhoneField.getText());
-//                output.writeObject("updatePerson");
-//                output.writeObject(user);
-//                String result = (String) input.readObject();
-//                JOptionPane.showMessageDialog(null, result, "Результат", JOptionPane.INFORMATION_MESSAGE);
-//                if (result.equals("Успешно сохранено!")) {
-//                    for (int i = 0; i < admins.size(); i++) {
-//                        if (USER_ID == admins.get(i).getUserId()) {
-//                            Admin admin = admins.get(i);
-//                            admin.setSurname(user.getSurname());
-//                            admin.setName(user.getName());
-//                            admin.setLastname(user.getLastname());
-//                            admin.setPhone(user.getPhone());
-//                            admins.set(i, admin);
-//                        }
-//                    }
-//                }
-//            } catch (Exception ex) {
-//                JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-//            }
-//            mySurnameField.setEditable(false);
-//            myNameField.setEditable(false);
-//            myLastnameField.setEditable(false);
-//            myPhoneField.setEditable(false);
-//            editMyPersonalDataButton.setText("Редактировать личные данные");
-//        }
-//        else{
-//            mySurnameField.setEditable(true);
-//            myNameField.setEditable(true);
-//            myLastnameField.setEditable(true);
-//            myPhoneField.setEditable(true);
-//            editMyPersonalDataButton.setText("Сохранить");
-//        }
-//    }
+    private void editMyPersonalDataActionPerformed(){
+        if(mySurnameField.isEditable()) {
+            try {
+                User user = new User();
+                user.setId(USER_ID);
+                user.setSurname(mySurnameField.getText());
+                user.setName(myNameField.getText());
+                user.setPatronymic(myLastnameField.getText());
+                user.setPhone(myPhoneField.getText());
+                user.setEmail(myEmailField.getText());
+                output.writeObject("updatePerson");
+                output.writeObject(user);
+                String result = (String) input.readObject();
+                JOptionPane.showMessageDialog(null, result, "Результат", JOptionPane.INFORMATION_MESSAGE);
+                if (result.equals("Успешно сохранено!")) {
+                    for (int i = 0; i < admins.size(); i++) {
+                        if (USER_ID == admins.get(i).getUserId()) {
+                            Admin admin = admins.get(i);
+                            admin.setSurname(user.getSurname());
+                            admin.setName(user.getName());
+                            admin.setPatronymic(user.getPatronymic());
+                            admin.setPhone(user.getPhone());
+                            admin.setEmail(user.getEmail());
+                            admins.set(i, admin);
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+            }
+            mySurnameField.setEditable(false);
+            myNameField.setEditable(false);
+            myLastnameField.setEditable(false);
+            myPhoneField.setEditable(false);
+            myEmailField.setEditable(false);
+            editMyPersonalDataButton.setText("Редактировать личные данные");
+        }
+        else{
+            mySurnameField.setEditable(true);
+            myNameField.setEditable(true);
+            myLastnameField.setEditable(true);
+            myPhoneField.setEditable(true);
+            myEmailField.setEditable(true);
+            editMyPersonalDataButton.setText("Сохранить");
+        }
+    }
 
-//    private void editMyAuthorizationDataActionPerformed(){
-//        if(myLoginField.isEditable()){
-//            if(!checkLogin(myLoginField.getText())) return;
-//            if(!checkPassword(myPasswordField1.getText(), myPasswordField2.getText())) return;
-//            try{
-//                ObjectOutputStream output = MainFrame.output;
-//                ObjectInputStream input = MainFrame.input;
-//                User user = new User();
-//                user.setId(USER_ID);
-//                user.setLogin(myLoginField.getText());
-//                user.setPassword(myPasswordField1.getText());
-//                user.setWork_phone(myWorkPhoneField.getText());
-//                output.writeObject("updateMyUserData");
-//                output.writeObject(user);
-//                String result = (String) input.readObject();
-//                JOptionPane.showMessageDialog(null, result, "Результат", JOptionPane.INFORMATION_MESSAGE);
-//                if (result.equals("Успешно сохранено!")) {
-//                    for (int i = 0; i < admins.size(); i++) {
-//                        if (USER_ID == admins.get(i).getUserId()) {
-//                            Admin admin = admins.get(i);
-//                            admin.setLogin(user.getLogin());
-//                            admin.setWork_phone(user.getWork_phone());
-//                            admins.set(i, admin);
-//                        }
-//                    }
-//                }
-//            }
-//            catch (Exception ex){
-//                JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-//            }
-//            myLoginField.setEditable(false);
-//            myPasswordField1.setEditable(false);
-//            myPasswordField2.setEditable(false);
-//            myWorkPhoneField.setEditable(false);
-//            editMyAuthorizationDataButton.setText("Редактировать данные авторизации");
-//        }
-//        else{
-//            myLoginField.setEditable(true);
-//            myPasswordField1.setEditable(true);
-//            myPasswordField2.setEditable(true);
-//            myWorkPhoneField.setEditable(true);
-//            editMyAuthorizationDataButton.setText("Сохранить");
-//        }
-//    }
+    private void editMyAuthorizationDataActionPerformed(){
+        if(myLoginField.isEditable()){
+            if(!checkLogin(myLoginField.getText())) return;
+            if(!checkPassword(myPasswordField1.getText(), myPasswordField2.getText())) return;
+            try{
+                ObjectOutputStream output = MainFrame.output;
+                ObjectInputStream input = MainFrame.input;
+                User user = new User();
+                user.setId(USER_ID);
+                user.setLogin(myLoginField.getText());
+                user.setPassword(myPasswordField1.getText());
+                output.writeObject("updateMyUserData");
+                output.writeObject(user);
+                String result = (String) input.readObject();
+                JOptionPane.showMessageDialog(null, result, "Результат", JOptionPane.INFORMATION_MESSAGE);
+                if (result.equals("Успешно сохранено!")) {
+                    for (int i = 0; i < admins.size(); i++) {
+                        if (USER_ID == admins.get(i).getUserId()) {
+                            Admin admin = admins.get(i);
+                            admin.setLogin(user.getLogin());
+                            admins.set(i, admin);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex){
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+            }
+            myLoginField.setEditable(false);
+            myPasswordField1.setEditable(false);
+            myPasswordField2.setEditable(false);
+            editMyAuthorizationDataButton.setText("Редактировать данные авторизации");
+        }
+        else{
+            myLoginField.setEditable(true);
+            myPasswordField1.setEditable(true);
+            myPasswordField2.setEditable(true);
+            editMyAuthorizationDataButton.setText("Сохранить");
+        }
+    }
 
 
     private void tableAdminsMouseClickedActionPerformed(){
         Admin admin = admins.get(tableAdmins.getSelectedRow());
         editAdminLoginField.setText(admin.getLogin());
-//        if(admin.getRights().equals("Полные")) editAdminRightsComboBox.setSelectedIndex(0);
-//        else editAdminRightsComboBox.setSelectedIndex(1);
-//        if(admin.getBlock().equals("Нет")) editAdminBlockComboBox.setSelectedIndex(0);
-//        else editAdminBlockComboBox.setSelectedIndex(1);
+        if(admin.getRights().equals("Полные")) editAdminRightsComboBox.setSelectedIndex(0);
+        else editAdminRightsComboBox.setSelectedIndex(1);
+        if(admin.getBlock().equals("Нет")) editAdminBlockComboBox.setSelectedIndex(0);
+        else editAdminBlockComboBox.setSelectedIndex(1);
         editAdminSurnameField.setText(admin.getSurname());
         editAdminNameField.setText(admin.getName());
         editAdminLastnameField.setText(admin.getSurname());
@@ -543,24 +550,24 @@ public class AdminFrame extends JFrame{
 //
 //
     private void addNewAdminActionPerformed(){
-//        if(!rights.equals("Полные")) {
-//            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
+        if(!rights.equals("Полные")) {
+            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         if(!checkLogin(newAdminLoginField.getText())) return;
         if(!checkPassword(newAdminPasswordField1.getText(), newAdminPasswordField2.getText())) return;
         try{
             Admin admin = new Admin();
             admin.setLogin(newAdminLoginField.getText());
             admin.setPassword(newAdminPasswordField1.getText());
-//            admin.setRights(String.valueOf(newAdminRightsComboBox.getSelectedItem()));
-//            admin.setBlock(String.valueOf(newAdminBlockComboBox.getSelectedItem()));
+            admin.setRights(String.valueOf(newAdminRightsComboBox.getSelectedItem()));
+            admin.setBlock(String.valueOf(newAdminBlockComboBox.getSelectedItem()));
             admin.setSurname(newAdminSurnameField.getText());
             admin.setName(newAdminNameField.getText());
             admin.setPatronymic(newAdminLastnameField.getText());
-            admin.setPhoneNumber(newAdminPhoneField.getText());
+            admin.setPhone(newAdminPhoneField.getText());
             admin.setEmail(newAdminEmailField.getText());
-            admin.setRole("Admin");
+            admin.setRole("admin");
             output.writeObject("insertAdmin");
             output.writeObject(admin);
             String result = (String) input.readObject();
@@ -648,8 +655,8 @@ public class AdminFrame extends JFrame{
         newAdminLoginField.setText("");
         newAdminPasswordField1.setText("");
         newAdminPasswordField2.setText("");
-//        newAdminRightsComboBox.setSelectedIndex(0);
-//        newAdminBlockComboBox.setSelectedIndex(0);
+        newAdminRightsComboBox.setSelectedIndex(0);
+        newAdminBlockComboBox.setSelectedIndex(0);
         newAdminSurnameField.setText("");
         newAdminNameField.setText("");
         newAdminLastnameField.setText("");
@@ -684,10 +691,10 @@ public class AdminFrame extends JFrame{
 
 
     private void deleteAdminActionPerformed(){
-//        if(!rights.equals("Полные")) {
-//            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
+        if(!rights.equals("Полные")) {
+            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         try{
             if(deleteAdminCheckBox.isSelected()){
                 Admin admin = admins.get(tableAdmins.getSelectedRow());
@@ -771,10 +778,10 @@ public class AdminFrame extends JFrame{
 
 
     private void editAdminActionPerformed(){
-//        if(!rights.equals("Полные")) {
-//            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
+        if(!rights.equals("Полные")) {
+            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         try {
             Admin admin;
             try {
@@ -786,14 +793,14 @@ public class AdminFrame extends JFrame{
                 if(!editAdminLoginField.getText().equals(admin.getLogin())){
                     if(!checkLogin(editAdminLoginField.getText())) return;
                 }
-                //admin.setRights(String.valueOf(editAdminRightsComboBox.getSelectedItem()));
-                //admin.setBlock(String.valueOf(editAdminBlockComboBox.getSelectedItem()));
+                admin.setLogin(editAdminLoginField.getText());
+                admin.setRights(String.valueOf(editAdminRightsComboBox.getSelectedItem()));
+                admin.setBlock(String.valueOf(editAdminBlockComboBox.getSelectedItem()));
                 admin.setSurname(editAdminSurnameField.getText());
                 admin.setName(editAdminNameField.getText());
                 admin.setPatronymic(editAdminLastnameField.getText());
-                admin.setPhoneNumber(editAdminPhoneField.getText());
+                admin.setPhone(editAdminPhoneField.getText());
                 admin.setEmail(editAdminEmailField.getText());
-                admin.setLogin(editAdminLoginField.getText());
             }
             catch (Exception ex){
                 ex.printStackTrace();
@@ -882,10 +889,10 @@ public class AdminFrame extends JFrame{
 
 
     private void editAdminPasswordActionPerformed(){
-//        if(!rights.equals("Полные")) {
-//            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
+        if(!rights.equals("Полные")) {
+            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         if(!checkPassword(editAdminPasswordField1.getText(), editAdminPasswordField2.getText())) return;
         try{
             Admin admin;

@@ -1,6 +1,8 @@
 package tableModel;
 
 import model.Student;
+import model.Teacher;
+import model.User;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -8,24 +10,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class StudentTableModel implements TableModel{
+public class TeacherTableModel implements TableModel{
+
     private Set<TableModelListener> listeners = new HashSet<TableModelListener>();
 
-    private List<Student> students;
+    private List<Teacher> teachers;
 
-    public StudentTableModel(List<Student> students){
-        this.students = students;
+    public TeacherTableModel(List<Teacher> teachers){
+        this.teachers = teachers;
     }
-
 
     @Override
     public int getRowCount() {
-        return students.size();
+        return teachers.size();
     }
 
     @Override
     public int getColumnCount() {
-        return 10;
+        return 9;
     }
 
     @Override
@@ -40,17 +42,15 @@ public class StudentTableModel implements TableModel{
             case 3:
                 return "Отчество";
             case 4:
-                return "Группа";
-            case 5:
-                return "Телефон";
-            case 6:
-                return "Дата рождения";
-            case 7:
-                return "Форма обучения";
-            case 8:
-                return "Адрес";
-            case 9:
                 return "Логин";
+            case 5:
+                return "Личный телефон";
+            case 6:
+                return "Почта";
+            case 7:
+                return "Кафедра";
+            case 8:
+                return "Должность";
         }
         return "";
     }
@@ -67,7 +67,6 @@ public class StudentTableModel implements TableModel{
             case 6: return String.class;
             case 7: return String.class;
             case 8: return String.class;
-            case 9: return String.class;
             default: return Object.class;
         }
     }
@@ -79,30 +78,27 @@ public class StudentTableModel implements TableModel{
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Student student = students.get(rowIndex);
+        Teacher teacher = teachers.get(rowIndex);
         switch (columnIndex){
             case 0:
-                return student.getUserId();
+                return teacher.getUserId();
             case 1:
-                return student.getSurname();
+                return teacher.getSurname();
             case 2:
-                return student.getName();
+                return teacher.getName();
             case 3:
-                return student.getPatronymic();
+                return teacher.getPatronymic();
             case 4:
-                return student.getNumberOfGroup();
+                return teacher.getLogin();
             case 5:
-                return student.getPhone();
+                return teacher.getPhone();
             case 6:
-                return student.getDOB();
+                return teacher.getEmail();
             case 7:
-                if(student.getFormOfEducation() == 0)
-                return "Бюджетная";
-                else return "Платная";
+                return teacher.getDepartment();
             case 8:
-                return student.getAddress();
-            case 9:
-                return student.getLogin();
+                return teacher.getPost();
+
         }
         return null;
     }
@@ -122,7 +118,7 @@ public class StudentTableModel implements TableModel{
         listeners.remove(listener);
     }
 
-    public void addRow(Student student){
-        students.add(student);
+    public void addRow(Teacher teacher){
+        teachers.add(teacher);
     }
 }

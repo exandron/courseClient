@@ -8,12 +8,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class StudentTableModel implements TableModel{
+public class GroupmatesTableModel implements TableModel{
     private Set<TableModelListener> listeners = new HashSet<TableModelListener>();
 
     private List<Student> students;
 
-    public StudentTableModel(List<Student> students){
+    public GroupmatesTableModel(List<Student> students){
         this.students = students;
     }
 
@@ -25,7 +25,7 @@ public class StudentTableModel implements TableModel{
 
     @Override
     public int getColumnCount() {
-        return 10;
+        return 8;
     }
 
     @Override
@@ -47,10 +47,6 @@ public class StudentTableModel implements TableModel{
                 return "Дата рождения";
             case 7:
                 return "Форма обучения";
-            case 8:
-                return "Адрес";
-            case 9:
-                return "Логин";
         }
         return "";
     }
@@ -66,8 +62,6 @@ public class StudentTableModel implements TableModel{
             case 5: return String.class;
             case 6: return String.class;
             case 7: return String.class;
-            case 8: return String.class;
-            case 9: return String.class;
             default: return Object.class;
         }
     }
@@ -97,7 +91,7 @@ public class StudentTableModel implements TableModel{
                 return student.getDOB();
             case 7:
                 if(student.getFormOfEducation() == 0)
-                return "Бюджетная";
+                    return "Бюджетная";
                 else return "Платная";
             case 8:
                 return student.getAddress();
