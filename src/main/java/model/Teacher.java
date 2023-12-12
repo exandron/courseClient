@@ -3,30 +3,39 @@ package model;
 import java.io.Serializable;
 
 public class Teacher extends User implements Serializable {
-    private int id;
+    private int teacherId;
     private String post;
     private String department;
 
     public Teacher() {
-        this.id = -1;
+        this.teacherId = -1;
         this.post = "";
         this.department = "";
     }
 
-    public Teacher(int person_id, String surname, String name, String patronymic, String phone, String email, int user_id, String login, String password, String role, int id, String post, String department) {
+    public Teacher(int person_id, String surname, String name, String patronymic, String phone, String email, int user_id, String login, String password, String role, int teacherId, String post, String department) {
         super(person_id, surname, name, patronymic, phone, email, user_id, login, password, role);
-        this.id = id;
+        this.teacherId = teacherId;
         this.post = post;
         this.department = department;
     }
+
+//    public int getTeacherId() {
+//        return teacherId;
+//    }
+//
+//    public void setTeacherId(int teacherId) {
+//        this.teacherId = teacherId;
+//    }
+
     @Override
     public int getId() {
-        return id;
+        return teacherId;
     }
 
     @Override
-    public void setId(int id) {
-        this.id = id;
+    public void setId(int teacherId) {
+        this.teacherId = teacherId;
     }
 
     public int getUserId() {return super.getId(); }

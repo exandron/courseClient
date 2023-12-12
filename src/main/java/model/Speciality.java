@@ -3,42 +3,46 @@ package model;
 import java.io.Serializable;
 
 public class Speciality extends Faculty implements Serializable {
-    int id;
-    String name;
+    private int specialityId;
+    private String specialityName;
 
-    Speciality(){
+    public Speciality(){
         super();
-        this.id = -1;
-        this.name="";
+        this.specialityId = -1;
+        this.specialityName="";
     }
 
-    Speciality(int facultyId, String facultyName, int specialityId, String specialityName){
+    public Speciality(int facultyId, String facultyName, int specialityId, String specialityName){
         super(facultyId, facultyName);
-        this.id = specialityId;
-        this.name= specialityName;
+        this.specialityId = specialityId;
+        this.specialityName= specialityName;
     }
 
-    @Override
-    public int getId() {
-        return id;
+
+    public int getSpecialityId() {
+        return specialityId;
     }
 
-    @Override
-    public void setId(int id) {
-        this.id = id;
+    public void setSpecialityId(int specialityId) {
+        this.specialityId = specialityId;
     }
 
-    @Override
-    public String getName() {
-        return name;
+    public String getSpecialityName() {
+        return specialityName;
     }
 
-    @Override
-    public void setName(String name) {
-        this.name = name;
+    public void setSpecialityName(String specialityName) {
+        this.specialityName = specialityName;
     }
 
-    public int getFacultyId() {return super.getId(); }
+    public int getFacultyId() {return super.getFacultyId(); }
+    public void setFacultyId(int facultyId) { super.setFacultyId(facultyId); }
 
-    public void setFacultyId(int id) { super.setId(id); }
+    public String getFacultyName() {
+        return super.getFacultyName();
+    }
+
+    public void setFacultyName(String facultyName) {
+        super.setFacultyName(facultyName);
+    }
 }

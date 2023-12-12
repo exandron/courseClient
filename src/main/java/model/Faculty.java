@@ -3,32 +3,32 @@ package model;
 import java.io.Serializable;
 
 public class Faculty implements Serializable {
-    int id;
-    String name;
+    private int facultyId;
+    private String facultyName;
 
-    public Faculty(int id, String name) {
-        this.id = id;
-        this.name = name;
+    public Faculty(int facultyId, String facultyName) {
+        this.facultyId = facultyId;
+        this.facultyName = facultyName;
     }
 
     public Faculty() {
-        this.id = -1;
-        this.name = "";
+        this.facultyId = -1;
+        this.facultyName = "";
     }
 
-    public int getId() {
-        return id;
+    public int getFacultyId() {
+        return facultyId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setFacultyId(int facultyId) {
+        this.facultyId = facultyId;
     }
 
-    public String getName() {
-        return name;
+    public String getFacultyName() {
+        return facultyName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFacultyName(String facultyName) {
+        this.facultyName = facultyName;
     }
 }

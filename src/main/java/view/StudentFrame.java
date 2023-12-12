@@ -1,24 +1,22 @@
 package view;
 
 import model.*;
-import tableModel.CenteredTextRenderer;
-import tableModel.ExamTableModel;
-import tableModel.GroupmatesTableModel;
-import tableModel.TestTableModel;
-//import org.jfree.data.category.DefaultCategoryDataset;
-//import tableModel.VisitTableModel;
+import tableModel.*;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class StudentFrame extends JFrame{
+public class StudentFrame extends JFrame {
     private JPanel mainPanel;
     private JButton closeFrameButton;
     private JTextField mySurnameField;
@@ -30,6 +28,7 @@ public class StudentFrame extends JFrame{
     private JPasswordField myPasswordField1;
     private JTextField myFOEField;
     private JTextField myAddressField;
+    private JTextField myDOBField;
     private JTextField myGroupField;
     private JTextField mySpecialityField;
     private JTextField myFacultyField;
@@ -38,11 +37,22 @@ public class StudentFrame extends JFrame{
     private JTable resultsOfTests;
     private JTable myGroupmatesTable;
     private JComboBox semesterComboBox;
+    private JTextField averageGradeField;
+    private JTable teachersStudentTable;
+    private JTable subjectsTable;
+    private JTextField amountOfStateStudentsField;
+    private JTextField amountOfPayersStudentsField;
+    private JTextField myScholarshipField;
+    private JButton printCheckButton;
 
     private ArrayList<Admin> admins = new ArrayList<>();
     private ArrayList<User> users = new ArrayList<>();
     private ArrayList<Student> students = new ArrayList<>();
     private ArrayList<Teacher> teachers = new ArrayList<>();
+    Map<Teacher, List<Subject>> teacherSubjectMap = new HashMap<>();
+
+    private ArrayList<Subject> subjects = new ArrayList<>();
+    private ArrayList<SubjectTeacher> subjectsTeachers = new ArrayList<>();
 
     private ArrayList<Exam> exams = new ArrayList<>();
     private ArrayList<Exam> myExams = new ArrayList<>();
@@ -50,10 +60,13 @@ public class StudentFrame extends JFrame{
     private ArrayList<Test> tests = new ArrayList<>();
     private ArrayList<Test> myTests = new ArrayList<>();
     private ArrayList<Student> myGroupmates = new ArrayList<>();
+    private ArrayList<Subject> subjectClicked = new ArrayList<>();
     private ObjectOutputStream output = MainFrame.output;
     private ObjectInputStream input = MainFrame.input;
-//    private ArrayList<Visits> visits = new ArrayList<>();
+    //    private ArrayList<Visits> visits = new ArrayList<>();
 //    private ArrayList<Client> clients = new ArrayList<>();
+// Создаем объект DefaultTableCellRenderer
+    DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
     private int USER_ID;
     private int student_id;
     private int group_id;
@@ -68,18 +81,22 @@ public class StudentFrame extends JFrame{
         setContentPane(mainPanel);
         setResizable(false);
         readData();
-//        TableModel examsModel = new ExamTableModel(myExams);
-//        resultsOfExams.setModel(examsModel);
-//        resultsOfExams.setDefaultRenderer(Integer.class, new CenteredTextRenderer());
-
-//        TableModel testsModel = new TestTableModel(myTests);
-//        resultsOfTests.setModel(testsModel);
-//        resultsOfTests.setDefaultRenderer(Integer.class, new CenteredTextRenderer());
-
+        calculateAmountOfStudents();
+        //calculateMyScholarship();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         TableModel groupmatesModel = new GroupmatesTableModel(myGroupmates);
         myGroupmatesTable.setModel(groupmatesModel);
-        myGroupmatesTable.setDefaultRenderer(Integer.class, new CenteredTextRenderer());
+        for (int columnIndex = 0; columnIndex < myGroupmatesTable.getColumnCount(); columnIndex++) {
+            myGroupmatesTable.getColumnModel().getColumn(columnIndex).setCellRenderer(centerRenderer);
+        }
 
+        teachersStudentTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                subjectTeacherTableMouseClickedActionPerformed();
+            }
+        });
+        printCheckButton.addActionListener(e -> printCheckButtonActionPerformed());
         pack();
         setLocationRelativeTo(null);
     }
@@ -91,8 +108,6 @@ public class StudentFrame extends JFrame{
     public StudentFrame(int user_id) {
         this.USER_ID = user_id;
         initComponents();
-//        editMyPersonalDataButton.addActionListener(e -> editMyPersonalDataActionPerformed());
-//        editMyAuthorizationDataButton.addActionListener(e -> editMyAuthorizationDataActionPerformed());
         closeFrameButton.addActionListener(e -> closeFrameActionPerformed());
 //        statsButton.addActionListener(e -> statsButtonActionPerformed());
         semesterComboBox.addActionListener(new ActionListener() {
@@ -100,6 +115,7 @@ public class StudentFrame extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 resultsOfExamsMouseClickedActionPerformed();
                 resultsOfTestsMouseClickedActionPerformed();
+                calculateMyScholarship();
             }
         });
     }
@@ -107,12 +123,12 @@ public class StudentFrame extends JFrame{
     //-------------------------------ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ-------------------------------
 
 
-    public void readData(){
-        try{
+    public void readData() {
+        try {
             output.writeObject("getAllStudents");
             this.students = (ArrayList<Student>) input.readObject();
-            for(int i = 0; i < students.size(); i++){
-                if(USER_ID == students.get(i).getUserId()){
+            for (int i = 0; i < students.size(); i++) {
+                if (USER_ID == students.get(i).getUserId()) {
                     Student student = students.get(i);
                     mySurnameField.setText(student.getSurname());
                     myNameField.setText(student.getName());
@@ -121,7 +137,12 @@ public class StudentFrame extends JFrame{
                     myEmailField.setText(student.getEmail());
                     myLoginField.setText(student.getLogin());
                     myPasswordField1.setText(student.getPassword());
-                    myFOEField.setText(String.valueOf(student.getFormOfEducation()));
+                    if (student.getFormOfEducation() == 0) {
+                        myFOEField.setText("Бюджетная");
+                    } else {
+                        myFOEField.setText("Платная");
+                    }
+                    myDOBField.setText(String.valueOf(student.getDOB()));
                     myAddressField.setText(student.getAddress());
                     myGroupField.setText(String.valueOf(student.getNumberOfGroup()));
                     mySpecialityField.setText(student.getSpecialityName());
@@ -130,75 +151,81 @@ public class StudentFrame extends JFrame{
                     group_id = student.getGroupId();
                 }
             }
-            System.out.println(student_id);
-//            output.writeObject("getAllUsers");
-//            this.users = (ArrayList<User>) input.readObject();
-//            output.writeObject("getAllAdmins");
-//            this.admins = (ArrayList<Admin>) input.readObject();
-//            output.writeObject("getAllVisits");
-//            this.visits = (ArrayList<Visits>) input.readObject();
-
 
             output.writeObject("getAllTeachers");
             this.teachers = (ArrayList<Teacher>) input.readObject();
-//            output.writeObject("getAllExams");
-//            this.exams = (ArrayList<Exam>) input.readObject();
-//            for(int i = 0; i < exams.size(); i++){
-//                if(student_id == exams.get(i).getStudentId()){
-//                    myExams.add(exams.get(i));
-//                }
-//            }
 
-//            output.writeObject("getAllTests");
-//            this.tests = (ArrayList<Test>) input.readObject();
-//            for(int i = 0; i < tests.size(); i++){
-//                if(student_id == tests.get(i).getStudentId()){
-//                    myTests.add(tests.get(i));
-//                }
-//            }
-
-            for(int i = 0; i < students.size(); i++){
-                if(group_id == students.get(i).getGroupId()){
+            for (int i = 0; i < students.size(); i++) {
+                if (group_id == students.get(i).getGroupId()) {
                     myGroupmates.add(students.get(i));
                 }
             }
-        }
-        catch (Exception ex){
+
+            TeachersStudentTableModel tableModel = new TeachersStudentTableModel(teachers);
+            teachersStudentTable.setModel(tableModel);
+
+            // Применяем центрирование ко всем ячейкам таблицы
+            for (int columnIndex = 0; columnIndex < teachersStudentTable.getColumnCount(); columnIndex++) {
+                teachersStudentTable.getColumnModel().getColumn(columnIndex).setCellRenderer(centerRenderer);
+            }
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    public void calculateAmountOfStudents() {
+        int amountOfStateStudents = 0;
+        int amountOfPayersStudents = 0;
+        for (int i = 0; i < myGroupmates.size(); i++) {
+            if (myGroupmates.get(i).getFormOfEducation() == 0) {
+                amountOfStateStudents++;
+            }
+            if (myGroupmates.get(i).getFormOfEducation() == 1) {
+                amountOfPayersStudents++;
+            }
+        }
+        amountOfStateStudentsField.setText(String.valueOf(amountOfStateStudents));
+        amountOfPayersStudentsField.setText(String.valueOf(amountOfPayersStudents));
+    }
 
     //-------------------------------ФУНКЦИИ-СЛУШАТЕЛИ-------------------------------
-    private void resultsOfExamsMouseClickedActionPerformed(){
-        try{
-        String selectedValueString = (String) semesterComboBox.getSelectedItem();
-        int selectedValue = 0;
-        selectedValue = Integer.parseInt(selectedValueString);
-        Exam exam = new Exam();
-        exam.setSemester(selectedValue);
-        output.writeObject("getAllExams");
-        output.writeObject(exam);
+    private void resultsOfExamsMouseClickedActionPerformed() {
+        try {
+            String selectedValueString = (String) semesterComboBox.getSelectedItem();
+            int selectedValue = 0;
+            selectedValue = Integer.parseInt(selectedValueString);
+            Exam exam = new Exam();
+            exam.setSemester(selectedValue);
+            output.writeObject("getAllExams");
+            output.writeObject(exam);
             this.exams = (ArrayList<Exam>) input.readObject();
-
             myExams.clear();
-
-            for(int i = 0; i < exams.size(); i++){
-                if(student_id == exams.get(i).getStudentId()){
+            double sum = 0;
+            for (int i = 0; i < exams.size(); i++) {
+                if (student_id == exams.get(i).getStudentId()) {
                     myExams.add(exams.get(i));
+                    sum += myExams.get(i).getGrade();
                 }
+            }
+            double averageGrade = sum / myExams.size();
+            if (String.valueOf(averageGrade) == "NaN") {
+                averageGradeField.setText("Нет оценок за семестр");
+            } else {
+                averageGradeField.setText(String.valueOf(averageGrade));
             }
             TableModel examsModel = new ExamTableModel(myExams);
             resultsOfExams.setModel(examsModel);
-            resultsOfExams.setDefaultRenderer(Integer.class, new CenteredTextRenderer());
-        }
-        catch (Exception ex){
+            //resultsOfExams.setDefaultRenderer(Integer.class, new CenteredTextRenderer());
+            for (int columnIndex = 0; columnIndex < resultsOfExams.getColumnCount(); columnIndex++) {
+                resultsOfExams.getColumnModel().getColumn(columnIndex).setCellRenderer(centerRenderer);
+            }
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void resultsOfTestsMouseClickedActionPerformed(){
-        try{
+    private void resultsOfTestsMouseClickedActionPerformed() {
+        try {
             String selectedValueString = (String) semesterComboBox.getSelectedItem();
             int selectedValue = 0;
             selectedValue = Integer.parseInt(selectedValueString);
@@ -207,175 +234,167 @@ public class StudentFrame extends JFrame{
             output.writeObject("getAllTests");
             output.writeObject(test);
             this.tests = (ArrayList<Test>) input.readObject();
-
             myTests.clear();
-
-            for(int i = 0; i < tests.size(); i++){
-                if(student_id == tests.get(i).getStudentId()){
+            for (int i = 0; i < tests.size(); i++) {
+                if (student_id == tests.get(i).getStudentId()) {
                     myTests.add(tests.get(i));
                 }
             }
             TableModel testsModel = new TestTableModel(myTests);
             resultsOfTests.setModel(testsModel);
-            resultsOfTests.setDefaultRenderer(Integer.class, new CenteredTextRenderer());
-        }
-        catch (Exception ex){
+            //resultsOfTests.setDefaultRenderer(Integer.class, new CenteredTextRenderer());
+            for (int columnIndex = 0; columnIndex < resultsOfTests.getColumnCount(); columnIndex++) {
+                resultsOfTests.getColumnModel().getColumn(columnIndex).setCellRenderer(centerRenderer);
+            }
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-//    private Boolean checkLogin(String login) {
-//        if (login.equals("")) {
-//            JOptionPane.showMessageDialog(null, "Вы не ввели логин!", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//            return false;
-//        } else if (login.length() <= 4 || login.length() >= 15) {
-//            JOptionPane.showMessageDialog(null, "Логин должен быть больше 4 и меньше 15 символов!", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//            return false;
-//        } else {
-//            for (int i = 0; i < admins.size(); i++) {
-//                if (login.equals(admins.get(i).getLogin())) {
-//                    JOptionPane.showMessageDialog(null, "Данный логин уже есть в системе!", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//                    return false;
-//                }
-//            }
-//            for (int i = 0; i < users.size(); i++) {
-//                if (login.equals(users.get(i).getLogin())) {
-//                    JOptionPane.showMessageDialog(null, "Данный логин уже есть в системе!", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//                    return false;
-//                }
-//            }
-//            for (int i = 0; i < doctors.size(); i++) {
-//                if (login.equals(doctors.get(i).getLogin())) {
-//                    JOptionPane.showMessageDialog(null, "Данный логин уже есть в системе!", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//                    return false;
-//                }
-//            }
-//            return true;
-//        }
-//    }
-//
-//    private Boolean checkPassword(String password, String provePassword) {
-//        if(password.equals("") || provePassword.equals("")) {
-//            JOptionPane.showMessageDialog(null, "Вы не ввели пароль!", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//            return false;
-//        }
-//        else if(password.length() <= 4 || password.length() >= 15) {
-//            JOptionPane.showMessageDialog(null, "Пароль должен быть больше 4 и меньше 15 символов!", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//            return false;
-//        }
-//        else if(!password.equals(provePassword)){
-//            JOptionPane.showMessageDialog(null, "Пароль и его подтверждение не совпадают!", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//            return false;
-//        }
-//        else return true;
-//    }
-//
-////    private void editMyPersonalDataActionPerformed(){
-////        if(mySurnameField.isEditable()) {
-////            try {
-////                User user = new User();
-////                user.setId(USER_ID);
-////                user.setSurname(mySurnameField.getText());
-////                user.setName(myNameField.getText());
-////                user.setLastname(myLastnameField.getText());
-////                user.setPhone(myPhoneField.getText());
-////                output.writeObject("updatePerson");
-////                output.writeObject(user);
-////                String result = (String) input.readObject();
-////                JOptionPane.showMessageDialog(null, result, "Результат", JOptionPane.INFORMATION_MESSAGE);
-////                if (result.equals("Успешно сохранено!")) {
-////                    for (int i = 0; i < doctors.size(); i++) {
-////                        if (USER_ID == doctors.get(i).getUserId()) {
-////                            Doctor doctor = doctors.get(i);
-////                            doctor.setSurname(user.getSurname());
-////                            doctor.setName(user.getName());
-////                            doctor.setLastname(user.getLastname());
-////                            doctor.setPhone(user.getPhone());
-////                            doctors.set(i, doctor);
-////                        }
-////                    }
-////                }
-////            } catch (Exception ex) {
-////                JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-////            }
-////            mySurnameField.setEditable(false);
-////            myNameField.setEditable(false);
-////            myLastnameField.setEditable(false);
-////            myPhoneField.setEditable(false);
-////            editMyPersonalDataButton.setText("Редактировать личные данные");
-////        }
-////        else{
-////            mySurnameField.setEditable(true);
-////            myNameField.setEditable(true);
-////            myLastnameField.setEditable(true);
-////            myPhoneField.setEditable(true);
-////            editMyPersonalDataButton.setText("Сохранить");
-////        }
-////    }
+    public void calculateMyScholarship() {
+        try {
+            myScholarshipField.setText("");
+            double averageGrade;
+            double sum = 0;
+            double amount = 0;
+            amount = myExams.size();
+            if (myFOEField.getText().equals("Бюджетная")) {
+                for (int i = 0; i < myExams.size(); i++) {
+                    sum += myExams.get(i).getGrade();
+                }
+                averageGrade = sum / amount;
+                for (int i = 0; i < myTests.size(); i++) {
+                    if (myTests.get(i).isPassed().equals("Не сдан")) {
+                        myScholarshipField.setText("Вы не сдали все зачеты!");
+                        return;
+                    } else {
+                        if (averageGrade <= 5) {
+                            myScholarshipField.setText("Средний балл ниже 5, вы лишаетесь стипендии!");
+                        } else if (averageGrade > 5 && averageGrade <= 6) {
+                            myScholarshipField.setText("110.50 р.");
+                        } else if (averageGrade > 6 && averageGrade <= 8) {
+                            myScholarshipField.setText("130.50 р.");
+                        } else if (averageGrade > 8 && averageGrade <= 9) {
+                            myScholarshipField.setText("150.50 р.");
+                        } else if (averageGrade > 9 && averageGrade <= 10) {
+                            myScholarshipField.setText("180.50 р.");
+                        } else {
+                            myScholarshipField.setText("");
+                        }
+                    }
+                }
+            } else if (myFOEField.getText().equals("Платная")) {
+                myScholarshipField.setText("Вы платник. У вас нет стипендии.");
+            } else {
+                myScholarshipField.setText("");
+            }
 
-    public void refreshData(){
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void subjectTeacherTableMouseClickedActionPerformed() {
+        try {
+            Teacher teacher = teachers.get(teachersStudentTable.getSelectedRow());
+            output.writeObject("getAllSubjectTeacher");
+            output.writeObject(teacher);
+            this.subjects = (ArrayList<Subject>) input.readObject();
+            SubjectTableModel tableModel = new SubjectTableModel(subjects);
+            subjectsTable.setModel(tableModel);
+            for (int columnIndex = 0; columnIndex < subjectsTable.getColumnCount(); columnIndex++) {
+                subjectsTable.getColumnModel().getColumn(columnIndex).setCellRenderer(centerRenderer);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void refreshData() {
         admins.clear();
         users.clear();
         students.clear();
+        subjects.clear();
         semesterComboBox.setSelectedIndex(0);
         readData();
-        //заблица
+        subjects.clear();
+        //заблицай
     }
 
-//    private void editMyAuthorizationDataActionPerformed(){
-//        if(myLoginField.isEditable()){
-//            if(!checkLogin(myLoginField.getText())) return;
-//            if(!checkPassword(myPasswordField1.getText(), myPasswordField2.getText())) return;
-//            try{
-//                ObjectOutputStream output = MainFrame.output;
-//                ObjectInputStream input = MainFrame.input;
-//                User user = new User();
-//                user.setId(USER_ID);
-//                user.setLogin(myLoginField.getText());
-//                user.setPassword(myPasswordField1.getText());
-//                user.setWork_phone(myWorkPhoneField.getText());
-//                output.writeObject("updateMyUserData");
-//                output.writeObject(user);
-//                String result = (String) input.readObject();
-//                JOptionPane.showMessageDialog(null, result, "Результат", JOptionPane.INFORMATION_MESSAGE);
-//                if (result.equals("Успешно сохранено!")) {
-//                    for (int i = 0; i < doctors.size(); i++) {
-//                        if (USER_ID == doctors.get(i).getUserId()) {
-//                            Doctor doctor = doctors.get(i);
-//                            doctor.setLogin(user.getLogin());
-//                            doctor.setWork_phone(user.getWork_phone());
-//                            doctors.set(i, doctor);
-//                        }
-//                    }
-//                }
-//            }
-//            catch (Exception ex){
-//                JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-//            }
-//            myLoginField.setEditable(false);
-//            myPasswordField1.setEditable(false);
-//            myPasswordField2.setEditable(false);
-//            myWorkPhoneField.setEditable(false);
-//            editMyAuthorizationDataButton.setText("Редактировать данные авторизации");
-//        }
-//        else{
-//            myLoginField.setEditable(true);
-//            myPasswordField1.setEditable(true);
-//            myPasswordField2.setEditable(true);
-//            myWorkPhoneField.setEditable(true);
-//            editMyAuthorizationDataButton.setText("Сохранить");
-//        }
-//    }
+//
 
-    private void closeFrameActionPerformed(){
+    private void closeFrameActionPerformed() {
         new MainFrame().setVisible(true);
         dispose();
     }
 
+    private void printCheckButtonActionPerformed() {
+        try {
+            String filePath = "D:\\result.txt";
+            File file = new File(filePath);
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file, false)); // Открыть файл в режиме дозаписи
+            writer.write("------Результаты экзаменов------\r\n");
+            for (int m = 0; m < myExams.size(); m++) {
+                Exam exam = myExams.get(m);
+                System.out.println(exam.getSubject());
+                output.writeObject("getCheckExam");
+                output.writeObject(exam);
+
+                String result = (String) input.readObject();
+                String[] message = result.split("#");
+                for (int i = 0; i < message.length; i++) {
+                    if (message[i] == null) {
+                        message[i] = "";
+                    }
+                }
+
+                writer.write("------Экзамен " + (m+1) + "------\r\n");
+                writer.write("Семестр:" + message[3] + "\r\n");
+                writer.write("Название предмета:" + message[5] + "\r\n");
+                writer.write("Оценка:" + message[8] + "\r\n");
+                writer.write("Дата экзамена:" + message[1] + "\r\n");
+                writer.write("Фамилия преподавателя:" + message[6] + "\r\n");
+                writer.write("--------------------------\r\n");
+            }
+
+            writer.write("------Результаты зачетов------\r\n");
+            for (int k = 0; k < myTests.size(); k++) {
+                Test test = myTests.get(k);
+                System.out.println(test.getSubject());
+                output.writeObject("getCheckTest");
+                output.writeObject(test);
+
+                String result = (String) input.readObject();
+                String[] message = result.split("#");
+                for (int i = 0; i < message.length; i++) {
+                    if (message[i] == null) {
+                        message[i] = "";
+                    }
+                }
+
+                writer.write("------Зачет " + (k+1) + "------\r\n");
+                writer.write("Семестр:" + message[3] + "\r\n");
+                writer.write("Название предмета:" + message[5] + "\r\n");
+                writer.write("Сдан/не сдан:" + message[8] + "\r\n");
+                writer.write("Дата зачета:" + message[1] + "\r\n");
+                writer.write("Фамилия преподавателя:" + message[6] + "\r\n");
+                writer.write("--------------------------\r\n");
+            }
+
+            writer.write("--------------------------\r\n");
+            writer.write("Средний балл за семестр: " +averageGradeField.getText() +"\r\n");
+            writer.write("Размер стипендии за семестр: " +myScholarshipField.getText() +"\r\n");
+            writer.close();
+            JOptionPane.showMessageDialog(null, "Результаты распечатаны в файл на диске D!", "Результат", JOptionPane.INFORMATION_MESSAGE);
+            refreshData();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+}
 //    private void statsButtonActionPerformed(){
 //        DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
 //        dataSet.setValue(clients.size(), "", "Количество клиентов");
 //        dataSet.setValue(visits.size(), "", "Количество записей на будущее время");
 //        MainFrame.createGraph(dataSet, "Статистика активности клиентов у текущего врача");
-//    }
-}
+//

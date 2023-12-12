@@ -3,32 +3,32 @@ package model;
 import java.io.Serializable;
 
 public class Subject implements Serializable {
-    private int id;
-    private String name;
+    private int subjectId;
+    private String subjectName;
+
+    public int getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(int subjectId) {
+        this.subjectId = subjectId;
+    }
+
+    public String getSubjectName() {
+        return subjectName;
+    }
+
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
+    }
 
     public Subject() {
-        this.id = -1;
-        this.name = "";
+        this.subjectId = -1;
+        this.subjectName = "";
     }
 
-    public Subject(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public Subject(int subjectId, String subjectName) {
+        this.subjectId = subjectId;
+        this.subjectName = subjectName;
     }
 }

@@ -3,38 +3,61 @@ package model;
 import java.io.Serializable;
 
 public class Group extends Speciality implements Serializable {
-    int id;
-    int number;
+    private int groupId;
+    private int numberOfGroup;
 
-    Group(){
+    public Group(){
         super();
-        this.id = -1;
-        this.number = -1;
+        this.groupId = -1;
+        this.numberOfGroup = -1;
+    }
+    public Group(int groupId, int number){
+        super();
+        this.groupId = groupId;
+        this.numberOfGroup = number;
     }
 
-    Group(int facultyId, String facultyName, int specialityId, String specialityName, int groupId, int number){
+    public Group(int facultyId, String facultyName, int specialityId, String specialityName, int groupId, int number){
         super(facultyId, facultyName, specialityId, specialityName);
-        this.id = groupId;
-        this.number = number;
+        this.groupId = groupId;
+        this.numberOfGroup = number;
     }
 
-    @Override
-    public int getId() {
-        return id;
+    public int getGroupId() {
+        return groupId;
     }
 
-    @Override
-    public void setId(int id) {
-        this.id = id;
-    }
-    public int getSpecialityId() {return super.getId(); }
-
-    public void setSpecialityId(int id) { super.setId(id); }
-    public int getNumber() {
-        return number;
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
+    public int getNumberOfGroup() {
+        return numberOfGroup;
     }
+
+    public void setNumberOfGroup(int numberOfGroup) {
+        this.numberOfGroup = numberOfGroup;
+    }
+
+    public int getFacultyId() {return super.getFacultyId(); }
+    public void setFacultyId(int facultyId) { super.setFacultyId(facultyId); }
+
+    public String getFacultyName() {
+        return super.getFacultyName();
+    }
+
+    public void setFacultyName(String facultyName) {
+        super.setFacultyName(facultyName);
+    }
+    public String getSpecialityName() {
+        return super.getSpecialityName();
+    }
+
+    public void setSpecialityName(String specialityName) {
+        super.setSpecialityName(specialityName);
+    }
+
+    public int getSpecialityId() {return super.getSpecialityId(); }
+    public void setSpecialityId(int specialityId) { super.setSpecialityId(specialityId); }
+
 }

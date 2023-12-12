@@ -76,7 +76,7 @@ public class GroupmatesTableModel implements TableModel{
         Student student = students.get(rowIndex);
         switch (columnIndex){
             case 0:
-                return student.getUserId();
+                return student.getId();
             case 1:
                 return student.getSurname();
             case 2:

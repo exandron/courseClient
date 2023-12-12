@@ -1,6 +1,16 @@
 package view;
 
 import model.User;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
 //import org.jfree.chart.ChartFactory;
 //import org.jfree.chart.ChartPanel;
 //import org.jfree.chart.JFreeChart;
@@ -52,22 +62,39 @@ public class MainFrame extends JFrame{
         setLocationRelativeTo(null);
     }
 
-//    public static void createGraph(DefaultCategoryDataset dataSet, String title){
-//        JFreeChart chart = ChartFactory.createBarChart(title, "", "", dataSet, PlotOrientation.VERTICAL, false, false, false);
-//        CategoryPlot catPlot = chart.getCategoryPlot();
-//        catPlot.setRangeGridlinePaint(Color.BLACK);
-//        ChartPanel chartPanel = new ChartPanel(chart);
-//        JFrame frame = new JFrame(title);
-//        frame.setSize(1000,600);
-//        JPanel panel = new JPanel();
-//        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-//        frame.setLocationRelativeTo(null);
-//        panel.removeAll();
-//        panel.add(chartPanel, BorderLayout.CENTER);
-//        panel.validate();
-//        frame.add(panel);
-//        frame.setVisible(true);
-//    }
+    public static void createGraph(DefaultCategoryDataset dataSet, String title){
+        JFreeChart chart = ChartFactory.createBarChart(title, "", "", dataSet, PlotOrientation.VERTICAL, false, false, false);
+        CategoryPlot catPlot = chart.getCategoryPlot();
+        // Настройка шрифта меток на оси x для серии "Полные"
+        CategoryAxis domainAxis = catPlot.getDomainAxis();
+        domainAxis.setTickLabelFont(new Font("Arial", Font.BOLD, 12));
+
+// Настройка шрифта меток на оси y для серии "Полные"
+        ValueAxis rangeAxis = catPlot.getRangeAxis();
+        rangeAxis.setTickLabelFont(new Font("Arial", Font.BOLD, 12));
+
+// Настройка шрифта меток на оси x для серии "Чтение"
+        CategoryAxis domainAxis2 = new CategoryAxis();
+        domainAxis2.setTickLabelFont(new Font("Arial", Font.BOLD, 12));
+        catPlot.setDomainAxis(1, domainAxis2);
+
+// Настройка шрифта меток на оси y для серии "Чтение"
+        ValueAxis rangeAxis2 = new NumberAxis();
+        rangeAxis2.setTickLabelFont(new Font("Arial", Font.BOLD, 12));
+        catPlot.setRangeAxis(1, rangeAxis2);
+        //catPlot.setRangeGridlinePaint(Color.BLACK);
+        ChartPanel chartPanel = new ChartPanel(chart);
+        JFrame frame = new JFrame(title);
+        frame.setSize(1000,600);
+        JPanel panel = new JPanel();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        panel.removeAll();
+        panel.add(chartPanel, BorderLayout.CENTER);
+        panel.validate();
+        frame.add(panel);
+        frame.setVisible(true);
+    }
 
 
     public MainFrame() {
@@ -98,7 +125,6 @@ public class MainFrame extends JFrame{
                         return;
                     }
                     else{
-                        System.out.println("aaaaaaa");
                         output.writeObject("authorization");
                         output.writeObject(user);
                         user = (User) input.readObject();
@@ -109,17 +135,15 @@ public class MainFrame extends JFrame{
                         else if(user.getRole().equals("admin")) {
                             new AdminFrame(user.getId()).setVisible(true);
                             dispose();
-//                            JOptionPane.showMessageDialog(null, "Админ выполнил вход");
-//                            System.out.println("Admin");
                         }
                         else if(user.getRole().equals("student")){
                             new StudentFrame(user.getId()).setVisible(true);
                             dispose();
                         }
-//                        else if(user.getRole().equals("doctor")){
-//                            new DoctorFrame(user.getId()).setVisible(true);
-//                            dispose();
-//                        }
+                        else if(user.getRole().equals("teacher")){
+                            new TeacherFrame(user.getId()).setVisible(true);
+                            dispose();
+                        }
                     }
                 }
                 catch (Exception ex){

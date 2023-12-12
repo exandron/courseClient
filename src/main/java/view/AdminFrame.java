@@ -1,20 +1,24 @@
 package view;
 
-import model.Admin;
+import model.*;
 //import model.Doctor;
-import model.Student;
-import model.Teacher;
-import model.User;
-import tableModel.AdminTableModel;
-import tableModel.StudentTableModel;
-import tableModel.TeacherTableModel;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.data.category.DefaultCategoryDataset;
+import tableModel.*;
 //import org.jfree.data.category.DefaultCategoryDataset;
 //import tableModel.AdminTableModel;
 //import tableModel.DoctorTableModel;
 //import tableModel.UserTableModel;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.ObjectInputStream;
@@ -23,7 +27,7 @@ import java.util.ArrayList;
 
 public class AdminFrame extends JFrame{
     private JPanel mainPanel;
-    private JTabbedPane newDoctor;
+    private JTabbedPane Admin;
     private JButton closeFrameButton;
     private JTextField mySurnameField;
     private JTextField myNameField;
@@ -36,7 +40,7 @@ public class AdminFrame extends JFrame{
     private JButton editMyAuthorizationDataButton;
     private JTable tableAdmins;
     private JTabbedPane tabbedPane1;
-    private JTable tableUsers;
+    private JTable tableTeachers;
     private JTabbedPane tabbedPane2;
     private JTabbedPane tabbedPane3;
     private JTextField myPhoneField;
@@ -64,84 +68,118 @@ public class AdminFrame extends JFrame{
     private JPasswordField editAdminPasswordField1;
     private JPasswordField editAdminPasswordField2;
     private JButton editAdminPasswordButton;
-    private JTextField newUserLoginField;
-    private JPasswordField newUserPasswordField1;
-    private JPasswordField newUserPasswordField2;
-    private JTextField newUserSurnameField;
-    private JTextField newUserNameField;
-    private JTextField newUserLastnameField;
-    private JTextField newUserPhoneField;
-    private JTextField newUserWorkPhoneField;
-    private JButton addNewUserButton;
-    private JButton clearNewUserFormButton;
-    private JTextField editUserLoginField;
-    private JTextField editUserSurnameField;
-    private JTextField editUserNameField;
-    private JTextField editUserLastnameField;
-    private JTextField editUserPhoneField;
-    private JTextField editUserWorkPhoneField;
-    private JButton editUserButton;
-    private JPasswordField editUserPasswordField1;
-    private JPasswordField editUserPasswordField2;
-    private JButton editUserPasswordButton;
-    private JTable tableDoctors;
-    private JCheckBox deleteUserCheckBox;
-    private JButton deleteUserButton;
-    private JButton addNewDoctorButton;
-    private JButton clearNewDoctorFormButton;
-    private JTextField newDoctorLoginField;
-    private JPasswordField newDoctorPasswordField1;
-    private JPasswordField newDoctorPasswordField2;
-    private JTextField newDoctorPostField;
-    private JTextField newDoctorRoomField;
-    private JTextField newDoctorDistrictField;
-    private JTextField newDoctorSurnameField;
-    private JTextField newDoctorNameField;
-    private JTextField newDoctorLastnameField;
-    private JTextField newDoctorPhoneField;
-    private JTextField newDoctorWorkPhoneField;
-    private JButton editDoctorButton;
-    private JTextField editDoctorLoginField;
-    private JTextField editDoctorPostField;
-    private JTextField editDoctorRoomField;
-    private JTextField editDoctorDistrictField;
-    private JTextField editDoctorSurnameField;
-    private JTextField editDoctorNameField;
-    private JTextField editDoctorLastnameField;
-    private JTextField editDoctorPhoneField;
-    private JTextField editDoctorWorkPhoneField;
-    private JPasswordField editDoctorPasswordField1;
-    private JPasswordField editDoctorPasswordField2;
-    private JButton editDoctorPasswordButton;
-    private JCheckBox deleteDoctorCheckBox;
-    private JButton deleteDoctorButton;
-    private JButton editDoctorScheduleButton;
-    private JComboBox moIn;
-    private JComboBox moOut;
-    private JComboBox tuIn;
-    private JComboBox tuOut;
-    private JComboBox weIn;
-    private JComboBox weOut;
-    private JComboBox thIn;
-    private JComboBox thOut;
-    private JComboBox frIn;
-    private JComboBox frOut;
-    private JComboBox saIn;
-    private JComboBox saOut;
-    private JComboBox suIn;
-    private JComboBox suOut;
+    private JTextField newTeacherLoginField;
+    private JButton clearNewTeacherFormButton;
+    private JTextField editTeacherLoginField;
+    private JTextField editTeacherSurnameField;
+    private JTextField editTeacherNameField;
+    private JTextField editTeacherLastnameField;
+    private JTextField editTeacherPhoneField;
+    private JTextField editTeacherEmailField;
+    private JButton editTeacherButton;
+    private JPasswordField editTeacherPasswordField1;
+    private JPasswordField editTeacherPasswordField2;
+    private JButton editTeacherPasswordButton;
+    private JTable tableStudents;
+    private JCheckBox deleteTeacherCheckBox;
+    private JButton deleteTeacherButton;
+    private JButton addNewStudentButton;
+    private JButton clearNewStudentFormButton;
+    private JTextField newStudentSurnameField;
+    private JTextField newStudentNameField;
+    private JTextField newStudentPatronymicField;
+    private JTextField newStudentLoginField;
+    private JPasswordField newStudentPasswordField1;
+    private JPasswordField newStudentPasswordField2;
+    private JTextField newStudentDOBField;
+    private JTextField newStudentEmailField;
+
+    private JTextField newStudentPhoneField;
+    private JButton editStudentButton;
+    private JTextField editStudentLoginField;
+    private JTextField editStudentDOBField;
+    private JTextField editStudentSurnameField;
+    private JTextField editStudentNameField;
+    private JTextField editStudentLastnameField;
+    private JTextField editStudentPhoneField;
+    private JTextField editStudentEmailField;
+    private JPasswordField editStudentPasswordField1;
+    private JPasswordField editStudentPasswordField2;
+    private JButton editStudentPasswordButton;
+    private JCheckBox deleteStudentCheckBox;
+    private JButton deleteStudentButton;
     private JTextField myRightsField;
     private JTextField myBlockField;
     private JComboBox editAdminRightsComboBox;
     private JComboBox editAdminBlockComboBox;
+
+    private JComboBox newStudentFOEComboBox;
+    private JTextField newStudentFacultyField;
+    private JTextField newStudentSpecialityField;
+    private JTextField newStudentAddressField;
+    private JComboBox newStudentGroupComboBox;
+    private JTextField editStudentAddressField;
+    private JComboBox editStudentGroupComboBox;
+    private JTextField editStudentSpecialityField;
+    private JTextField editStudentFacultyField;
+    private JComboBox editStudentFOEComboBox;
+    private JTabbedPane tabbedPane4;
+    private JTable tableSubjects;
+    private JButton addNewTeacherButton;
+    private JTextField newTeacherNameField;
+    private JTextField newTeacherLastnameField;
+    private JTextField newTeacherPhoneField;
+    private JTextField newTeacherSurnameField;
+    private JTextField newTeacherEmailField;
+    private JComboBox newTeacherPostComboBox;
+    private JComboBox newTeacherDepartmentComboBox;
+    private JPasswordField newTeacherPasswordField1;
+    private JPasswordField newTeacherPasswordField2;
+    private JComboBox editTeacherPostComboBox;
+    private JComboBox editTeacherDepartmentComboBox;
+    private JTable tableGroups;
+    private JTextField newSubjectNameField;
+    private JTextField editSubjectNameField;
+    private JButton deleteSubjectButton;
+    private JButton editSubjectButton;
+    private JButton addSubjectButton;
+    private JButton clearSubjectButton;
+    private JCheckBox deleteSubjectCheckBox;
+    private JTextField newGroupNumberField;
+    private JComboBox newGroupSpecialityComboBox;
+    private JTextField newGroupFacultyField;
+    private JTextField editGroupNumberField;
+    private JComboBox editGroupSpecialityComboBox;
+    private JTextField editGroupFacultyField;
+    private JButton addGroupButton;
+    private JButton clearGroupButton;
+    private JButton editGroupButton;
+    private JButton deleteGroupButton;
+    private JCheckBox deleteGroupCheckBox;
+    private JButton statsAdminBlockButton;
+    private JButton statsAdminRightsButton;
     private ArrayList<Admin> admins = new ArrayList<>();
     private ArrayList<Teacher> teachers = new ArrayList<>();
     private ArrayList<Student> students = new ArrayList<>();
+    private ArrayList<Group> groups = new ArrayList<>();
+    private ArrayList<Speciality> specialities = new ArrayList<>();
+
+    private ArrayList<Subject> subjects = new ArrayList<>();
+    private DefaultComboBoxModel<String> newGroupComboBoxModel = new DefaultComboBoxModel<>();
+    private DefaultComboBoxModel<String> newGroupSpecialityBoxModel = new DefaultComboBoxModel<>();
+    private DefaultComboBoxModel<String> editGroupComboBoxModel = new DefaultComboBoxModel<>();
+    private DefaultComboBoxModel<String> editGroupSpecialityBoxModel = new DefaultComboBoxModel<>();
+    private Group selectedGroup = new Group();
+    private Speciality selectedSpeciality = new Speciality();
+    private int group_id;
     private ObjectOutputStream output = MainFrame.output;
     private ObjectInputStream input = MainFrame.input;
     private int USER_ID;
     private String rights;
     private String block;
+
+    DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+
 
     //-------------------------------ИНИЦИАЛИЗАЦИЯ ФРЕЙМА-------------------------------
 
@@ -153,17 +191,36 @@ public class AdminFrame extends JFrame{
         setContentPane(mainPanel);
         setResizable(false);
         readData();
+
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+
         TableModel adminsModel = new AdminTableModel(admins);
         tableAdmins.setModel(adminsModel);
         tableAdmins.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 
         TableModel teachersModel = new TeacherTableModel(teachers);
-        tableUsers.setModel(teachersModel);
-        tableUsers.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        tableTeachers.setModel(teachersModel);
+        tableTeachers.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 
         TableModel studentsModel = new StudentTableModel(students);
-        tableDoctors.setModel(studentsModel);
-        tableDoctors.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        tableStudents.setModel(studentsModel);
+        tableStudents.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+
+        TableModel subjectsModel = new SubjectTableModel(subjects);
+        tableSubjects.setModel(subjectsModel);
+        tableSubjects.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+
+        for (int columnIndex = 0; columnIndex < tableSubjects.getColumnCount(); columnIndex++) {
+            tableSubjects.getColumnModel().getColumn(columnIndex).setCellRenderer(centerRenderer);
+        }
+
+        TableModel groupsModel = new GroupsTableModel(groups);
+        tableGroups.setModel(groupsModel);
+        tableGroups.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+
+        for (int columnIndex = 0; columnIndex < tableGroups.getColumnCount(); columnIndex++) {
+            tableGroups.getColumnModel().getColumn(columnIndex).setCellRenderer(centerRenderer);
+        }
         pack();
         setLocationRelativeTo(null);
         for (int i = 0; i < admins.size(); i++) {
@@ -197,34 +254,84 @@ public class AdminFrame extends JFrame{
         editAdminButton.addActionListener(e -> editAdminActionPerformed());
         editAdminPasswordButton.addActionListener(e -> editAdminPasswordActionPerformed());
 //        statsAdminBlockButton.addActionListener(e -> statsAdminBlockActionPerformed());
-//        statsAdminRightsButton.addActionListener(e -> statsAdminRightsActionPerformed());
-        clearNewUserFormButton.addActionListener(e -> clearNewUserFormActionPerformed());
-//        addNewUserButton.addActionListener(e -> addNewUserActionPerformed());
-//        tableUsers.addMouseListener(new MouseAdapter() {
+        statsAdminRightsButton.addActionListener(e -> statsAdminRightsActionPerformed());
+        clearNewTeacherFormButton.addActionListener(e -> clearNewTeacherFormActionPerformed());
+        addNewTeacherButton.addActionListener(e -> addNewTeacherActionPerformed());
+        tableTeachers.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                tableTeachersMouseClickedActionPerformed();
+            }
+        });
+        editTeacherPasswordButton.addActionListener(e -> editTeacherPasswordActionPerformed());
+        editTeacherButton.addActionListener(e -> editTeacherActionPerformed());
+        deleteTeacherButton.addActionListener(e -> deleteTeacherActionPerformed());
+        clearNewStudentFormButton.addActionListener(e -> clearNewStudentFormActionPerformed());
+        addNewStudentButton.addActionListener(e -> addNewStudentButtonActionPerformed());
+        tableStudents.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                tableStudentsMouseClickedActionPerformed();
+            }
+        });
+        newStudentGroupComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                newGroupMouseClickedActionPerformed();
+            }
+        });
+        editStudentGroupComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                editGroupMouseClickedActionPerformed();
+            }
+        });
+        newGroupSpecialityComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                newGroupSpecialityMouseClickedActionPerformed();
+            }
+        });
+        editGroupSpecialityComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                editGroupSpecialityMouseClickedActionPerformed();
+            }
+        });
+        editStudentButton.addActionListener(e -> editStudentActionPerformed());
+        editStudentPasswordButton.addActionListener(e -> editStudentPasswordActionPerformed());
+
+        deleteStudentButton.addActionListener(e -> deleteStudentActionPerformed());
+        tableSubjects.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                tableSubjectsMouseClickedActionPerformed();
+            }
+        });
+        addSubjectButton.addActionListener(e -> addNewSubjectActionPerformed());
+        clearSubjectButton.addActionListener(e -> clearNewSubjectFormActionPerformed());
+        tableGroups.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                tableGroupsMouseClickedActionPerformed();
+            }
+        });
+        clearGroupButton.addActionListener(e -> clearNewGroupFormActionPerformed());
+        editSubjectButton.addActionListener(e -> editSubjectActionPerformed());
+        editGroupButton.addActionListener(e -> editGroupActionPerformed());
+        deleteSubjectButton.addActionListener(e -> deleteSubjectActionPerformed());
+        deleteGroupButton.addActionListener(e -> deleteGroupActionPerformed());
+        addGroupButton.addActionListener(e -> addNewGroupActionPerformed());
+        Admin.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                isBlock();
+            }
+        });
+//        tableSubjects.addMouseListener(new MouseAdapter() {
 //            @Override
 //            public void mouseClicked(MouseEvent e) {
-//                tableUsersMouseClickedActionPerformed();
-//            }
-//        });
-//        editUserPasswordButton.addActionListener(e -> editUserPasswordActionPerformed());
-//        editUserButton.addActionListener(e -> editUserActionPerformed());
-//        deleteUserButton.addActionListener(e -> deleteUserActionPerformed());
-        clearNewDoctorFormButton.addActionListener(e -> clearNewDoctorFormActionPerformed());
-//        addNewDoctorButton.addActionListener(e -> addNewDoctorButtonActionPerformed());
-//        tableDoctors.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                tableDoctorsMouseClickedActionPerformed();
-//            }
-//        });
-//        editDoctorButton.addActionListener(e -> editDoctorActionPerformed());
-//        editDoctorPasswordButton.addActionListener(e -> editDoctorPasswordActionPerformed());
-//        editDoctorScheduleButton.addActionListener(e -> editDoctorScheduleActionPerformed());
-//        deleteDoctorButton.addActionListener(e -> deleteDoctorActionPerformed());
-//        newDoctor.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                isBlock();
+//                tableSubjectsMouseClickedActionPerformed();
 //            }
 //        });
     }
@@ -263,6 +370,45 @@ public class AdminFrame extends JFrame{
             this.teachers = (ArrayList<Teacher>) input.readObject();
             output.writeObject("getAllStudents");
             this.students = (ArrayList<Student>) input.readObject();
+            output.writeObject("getAllGroups");
+            this.groups = (ArrayList<Group>) input.readObject();
+            output.writeObject("getAllSpecialities");
+            this.specialities = (ArrayList<Speciality>) input.readObject();
+            output.writeObject("getAllSubjects");
+            this.subjects = (ArrayList<Subject>) input.readObject();
+            newStudentGroupComboBox.removeAllItems();
+            for(int i = 0; i < groups.size(); i++){
+                Group group = groups.get(i);
+                int groupNumber = group.getNumberOfGroup();
+                String groupNumberString = String.valueOf(groupNumber);
+                newGroupComboBoxModel.addElement(groupNumberString);
+            }
+            newStudentGroupComboBox.setModel(newGroupComboBoxModel);
+
+            newGroupSpecialityComboBox.removeAllItems();
+            for(int i = 0; i < specialities.size(); i++){
+                Speciality speciality = specialities.get(i);
+                String nameOfSpeciality = speciality.getSpecialityName();
+                newGroupSpecialityBoxModel.addElement(nameOfSpeciality);
+            }
+            newGroupSpecialityComboBox.setModel(newGroupSpecialityBoxModel);
+
+            editStudentGroupComboBox.removeAllItems();
+            for(int i = 0; i < groups.size(); i++){
+                Group group = groups.get(i);
+                int groupNumber = group.getNumberOfGroup();
+                String groupNumberString = String.valueOf(groupNumber);
+                editGroupComboBoxModel.addElement(groupNumberString);
+            }
+            editStudentGroupComboBox.setModel(editGroupComboBoxModel);
+
+            editGroupSpecialityComboBox.removeAllItems();
+            for(int i = 0; i < specialities.size(); i++){
+                Speciality speciality = specialities.get(i);
+                String nameOfSpeciality = speciality.getSpecialityName();
+                editGroupSpecialityBoxModel.addElement(nameOfSpeciality);
+            }
+            editGroupSpecialityComboBox.setModel(editGroupSpecialityBoxModel);
         }
         catch (Exception ex){
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
@@ -273,13 +419,26 @@ public class AdminFrame extends JFrame{
         admins.clear();
         teachers.clear();
         students.clear();
+        subjects.clear();
+        groups.clear();
         readData();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         TableModel adminsModel = new AdminTableModel(admins);
         tableAdmins.setModel(adminsModel);
-        TableModel usersModel = new TeacherTableModel(teachers);
-        tableUsers.setModel(usersModel);
+        TableModel teachersModel = new TeacherTableModel(teachers);
+        tableTeachers.setModel(teachersModel);
         TableModel studentsModel = new StudentTableModel(students);
-        tableDoctors.setModel(studentsModel);
+        tableStudents.setModel(studentsModel);
+        TableModel subjectsModel = new SubjectTableModel(subjects);
+        tableSubjects.setModel(subjectsModel);
+        for (int columnIndex = 0; columnIndex < tableSubjects.getColumnCount(); columnIndex++) {
+            tableSubjects.getColumnModel().getColumn(columnIndex).setCellRenderer(centerRenderer);
+        }
+        TableModel groupsModel = new GroupsTableModel(groups);
+        tableGroups.setModel(groupsModel);
+        for (int columnIndex = 0; columnIndex < tableGroups.getColumnCount(); columnIndex++) {
+            tableGroups.getColumnModel().getColumn(columnIndex).setCellRenderer(centerRenderer);
+        }
     }
 
     public void clearEditAndPasswordForm(){
@@ -294,43 +453,43 @@ public class AdminFrame extends JFrame{
         editAdminPasswordField1.setText("");
         editAdminPasswordField2.setText("");
 
-        editUserLoginField.setText("");
-        editUserSurnameField.setText("");
-        editUserNameField.setText("");
-        editUserLastnameField.setText("");
-        editUserPhoneField.setText("");
-        editUserWorkPhoneField.setText("");
-        editUserPasswordField1.setText("");
-        editUserPasswordField2.setText("");
+        editTeacherLoginField.setText("");
+        editTeacherSurnameField.setText("");
+        editTeacherNameField.setText("");
+        editTeacherLastnameField.setText("");
+        editTeacherPhoneField.setText("");
+        editTeacherEmailField.setText("");
+        editTeacherPasswordField1.setText("");
+        editTeacherPasswordField2.setText("");
+        editTeacherPostComboBox.setSelectedIndex(0);
+        editTeacherDepartmentComboBox.setSelectedIndex(0);
 
-        editDoctorLoginField.setText("");
-        editDoctorPostField.setText("");
-        editDoctorRoomField.setText("");
-        editDoctorDistrictField.setText("");
-        editDoctorSurnameField.setText("");
-        editDoctorNameField.setText("");
-        editDoctorLastnameField.setText("");
-        editDoctorPhoneField.setText("");
-        editDoctorWorkPhoneField.setText("");
-        editDoctorPasswordField1.setText("");
-        editDoctorPasswordField2.setText("");
+        editStudentLoginField.setText("");
+        editStudentFacultyField.setText("");
+        editStudentSpecialityField.setText("");
+        editStudentDOBField.setText("");
+        editStudentAddressField.setText("");
+        editStudentSurnameField.setText("");
+        editStudentNameField.setText("");
+        editStudentLastnameField.setText("");
+        editStudentPhoneField.setText("");
+        editStudentEmailField.setText("");
+        editStudentPasswordField1.setText("");
+        editStudentPasswordField2.setText("");
+        editStudentGroupComboBox.setSelectedIndex(0);
+        editStudentFOEComboBox.setSelectedIndex(0);
 
-        moIn.setSelectedIndex(0);
-        moOut.setSelectedIndex(0);
-        tuIn.setSelectedIndex(0);
-        tuOut.setSelectedIndex(0);
-        weIn.setSelectedIndex(0);
-        weOut.setSelectedIndex(0);
-        thIn.setSelectedIndex(0);
-        thOut.setSelectedIndex(0);
-        frIn.setSelectedIndex(0);
-        frOut.setSelectedIndex(0);
-        saIn.setSelectedIndex(0);
-        saOut.setSelectedIndex(0);
-        suIn.setSelectedIndex(0);
-        suOut.setSelectedIndex(0);
+        editSubjectNameField.setText("");
+
+        editGroupFacultyField.setText("");
+        editGroupFacultyField.setText("");
+        editGroupSpecialityComboBox.setSelectedIndex(0);
 
         deleteAdminCheckBox.setSelected(false);
+        deleteStudentCheckBox.setSelected(false);
+        deleteTeacherCheckBox.setSelected(false);
+        deleteSubjectCheckBox.setSelected(false);
+        deleteGroupCheckBox.setSelected(false);
     }
 
     private Boolean checkLogin(String login) {
@@ -492,63 +651,142 @@ public class AdminFrame extends JFrame{
         editAdminPasswordField2.setText(admin.getPassword());
     }
 
-//    private void tableUsersMouseClickedActionPerformed(){
-//        User user = users.get(tableUsers.getSelectedRow());
-//        editUserLoginField.setText(user.getLogin());
-//        editUserSurnameField.setText(user.getSurname());
-//        editUserNameField.setText(user.getName());
-//        editUserLastnameField.setText(user.getLastname());
-//        editUserPhoneField.setText(user.getPhone());
-//        editUserWorkPhoneField.setText(user.getWork_phone());
-//        editUserPasswordField1.setText(user.getPassword());
-//        editUserPasswordField2.setText(user.getPassword());
-//    }
-//
-//    private void tableDoctorsMouseClickedActionPerformed(){
-//        Doctor doctor = doctors.get(tableDoctors.getSelectedRow());
-//        editDoctorLoginField.setText(doctor.getLogin());
-//        editDoctorPostField.setText(doctor.getPost());
-//        editDoctorRoomField.setText(doctor.getRoom());
-//        editDoctorDistrictField.setText(doctor.getDistrict());
-//        editDoctorSurnameField.setText(doctor.getSurname());
-//        editDoctorNameField.setText(doctor.getName());
-//        editDoctorLastnameField.setText(doctor.getLastname());
-//        editDoctorPhoneField.setText(doctor.getPhone());
-//        editDoctorWorkPhoneField.setText(doctor.getWork_phone());
-//        editDoctorPasswordField1.setText(doctor.getPassword());
-//        editDoctorPasswordField2.setText(doctor.getPassword());
-//
-//        if(doctor.getSchedule()[0].equals("")) moIn.setSelectedIndex(0);
-//        else moIn.setSelectedItem(doctor.getSchedule()[0]);
-//        if(doctor.getSchedule()[1].equals("")) moOut.setSelectedIndex(0);
-//        else moOut.setSelectedItem(doctor.getSchedule()[1]);
-//        if(doctor.getSchedule()[2].equals("")) tuIn.setSelectedIndex(0);
-//        else tuIn.setSelectedItem(doctor.getSchedule()[2]);
-//        if(doctor.getSchedule()[3].equals("")) tuOut.setSelectedIndex(0);
-//        else tuOut.setSelectedItem(doctor.getSchedule()[3]);
-//        if(doctor.getSchedule()[4].equals("")) weIn.setSelectedIndex(0);
-//        else weIn.setSelectedItem(doctor.getSchedule()[4]);
-//        if(doctor.getSchedule()[5].equals("")) weOut.setSelectedIndex(0);
-//        else weOut.setSelectedItem(doctor.getSchedule()[5]);
-//        if(doctor.getSchedule()[6].equals("")) thIn.setSelectedIndex(0);
-//        else thIn.setSelectedItem(doctor.getSchedule()[6]);
-//        if(doctor.getSchedule()[7].equals("")) thOut.setSelectedIndex(0);
-//        else  thOut.setSelectedItem(doctor.getSchedule()[7]);
-//        if(doctor.getSchedule()[8].equals("")) frIn.setSelectedIndex(0);
-//        else frIn.setSelectedItem(doctor.getSchedule()[8]);
-//        if(doctor.getSchedule()[9].equals("")) frOut.setSelectedIndex(0);
-//        else  frOut.setSelectedItem(doctor.getSchedule()[9]);
-//        if(doctor.getSchedule()[10].equals("")) saIn.setSelectedIndex(0);
-//        else saIn.setSelectedItem(doctor.getSchedule()[10]);
-//        if(doctor.getSchedule()[11].equals("")) saOut.setSelectedIndex(0);
-//        else  saOut.setSelectedItem(doctor.getSchedule()[11]);
-//        if(doctor.getSchedule()[12].equals("")) suIn.setSelectedIndex(0);
-//        else  suIn.setSelectedItem(doctor.getSchedule()[12]);
-//        if(doctor.getSchedule()[13].equals("")) suOut.setSelectedIndex(0);
-//        else suOut.setSelectedItem(doctor.getSchedule()[13]);
-//    }
-//
-//
+    private void tableTeachersMouseClickedActionPerformed(){
+        Teacher teacher = teachers.get(tableTeachers.getSelectedRow());
+        editTeacherLoginField.setText(teacher.getLogin());
+        editTeacherSurnameField.setText(teacher.getSurname());
+        editTeacherNameField.setText(teacher.getName());
+        editTeacherLastnameField.setText(teacher.getPatronymic());
+        editTeacherPhoneField.setText(teacher.getPhone());
+        editTeacherEmailField.setText(teacher.getEmail());
+        editTeacherPasswordField1.setText(teacher.getPassword());
+        editTeacherPasswordField2.setText(teacher.getPassword());
+        String post = teacher.getPost();
+        String department = teacher.getDepartment();
+        int indexPost = -1;
+        int indexDepartment = -1;
+        for (int i = 0; i < editTeacherPostComboBox.getItemCount(); i++) {
+            if (editTeacherPostComboBox.getItemAt(i).equals(post)) {
+                indexPost = i;
+                break;
+            }
+        }
+        for (int i = 0; i < editTeacherDepartmentComboBox.getItemCount(); i++) {
+            if (editTeacherDepartmentComboBox.getItemAt(i).equals(department)) {
+                indexDepartment = i;
+                break;
+            }
+        }
+        editTeacherPostComboBox.setSelectedIndex(indexPost);
+        editTeacherDepartmentComboBox.setSelectedIndex(indexDepartment);
+    }
+
+    private void tableStudentsMouseClickedActionPerformed(){
+        Student student = students.get(tableStudents.getSelectedRow());
+        editStudentLoginField.setText(student.getLogin());
+        editStudentSurnameField.setText(student.getSurname());
+        editStudentNameField.setText(student.getName());
+        editStudentLastnameField.setText(student.getPatronymic());
+        editStudentPhoneField.setText(student.getPhone());
+        editStudentEmailField.setText(student.getEmail());
+        editStudentAddressField.setText(student.getAddress());
+        editStudentDOBField.setText(student.getDOB());
+        editStudentGroupComboBox.setSelectedItem(student.getNumberOfGroup());
+        if(student.getFormOfEducation()== 0) editStudentFOEComboBox.setSelectedIndex(0);
+        else editStudentFOEComboBox.setSelectedIndex(1);
+        if(student.getFormOfEducation()== 1) editStudentFOEComboBox.setSelectedIndex(1);
+        else editStudentFOEComboBox.setSelectedIndex(0);
+    }
+
+    private void tableSubjectsMouseClickedActionPerformed(){
+        Subject subject = subjects.get(tableSubjects.getSelectedRow());
+        editSubjectNameField.setText(subject.getSubjectName());
+    }
+
+    private void tableGroupsMouseClickedActionPerformed(){
+        Group group = groups.get(tableGroups.getSelectedRow());
+        editGroupNumberField.setText(String.valueOf(group.getNumberOfGroup()));
+        editGroupSpecialityComboBox.setSelectedItem(group.getSpecialityName());
+        editGroupFacultyField.setText(group.getFacultyName());
+    }
+
+    private void editGroupMouseClickedActionPerformed(){
+        try{
+            Object selectedItem = editStudentGroupComboBox.getSelectedItem();
+            if (selectedItem != null) {
+                String selectedValueString = (String) editStudentGroupComboBox.getSelectedItem();
+                int selectedValue = Integer.parseInt(selectedValueString);
+                Group group = new Group();
+                group.setNumberOfGroup(selectedValue);
+                output.writeObject("getGroup");
+                output.writeObject(group);
+                this.selectedGroup = (Group) input.readObject();
+                group_id = selectedGroup.getGroupId();
+                editStudentFacultyField.setText(selectedGroup.getFacultyName());
+                editStudentSpecialityField.setText(selectedGroup.getSpecialityName());}
+        }
+        catch (Exception ex){
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void editGroupSpecialityMouseClickedActionPerformed(){
+        try{
+            Object selectedItem = editGroupSpecialityComboBox.getSelectedItem();
+            if (selectedItem != null) {
+                String selectedValue = (String) editGroupSpecialityComboBox.getSelectedItem();
+                Speciality speciality = new Speciality();
+                speciality.setSpecialityName(selectedValue);
+                output.writeObject("getSpeciality");
+                output.writeObject(speciality);
+                this.selectedSpeciality = (Speciality) input.readObject();
+                //group_id = selectedGroup.getGroupId();
+                editGroupFacultyField.setText(selectedSpeciality.getFacultyName());
+            }
+        }
+        catch (Exception ex){
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void newGroupMouseClickedActionPerformed(){
+        try{
+            Object selectedItem = newStudentGroupComboBox.getSelectedItem();
+            if (selectedItem != null) {
+            String selectedValueString = (String) newStudentGroupComboBox.getSelectedItem();
+            int selectedValue = Integer.parseInt(selectedValueString);
+            Group group = new Group();
+            group.setNumberOfGroup(selectedValue);
+            output.writeObject("getGroup");
+            output.writeObject(group);
+            this.selectedGroup = (Group) input.readObject();
+            group_id = selectedGroup.getGroupId();
+            newStudentFacultyField.setText(selectedGroup.getFacultyName());
+            newStudentSpecialityField.setText(selectedGroup.getSpecialityName());}
+        }
+        catch (Exception ex){
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void newGroupSpecialityMouseClickedActionPerformed(){
+        try{
+            Object selectedItem = newGroupSpecialityComboBox.getSelectedItem();
+            if (selectedItem != null) {
+                String selectedValue = (String) newGroupSpecialityComboBox.getSelectedItem();
+                Speciality speciality = new Speciality();
+                speciality.setSpecialityName(selectedValue);
+                output.writeObject("getSpeciality");
+                output.writeObject(speciality);
+                this.selectedSpeciality = (Speciality) input.readObject();
+                //group_id = selectedGroup.getGroupId();
+                newGroupFacultyField.setText(selectedSpeciality.getFacultyName());
+                }
+        }
+        catch (Exception ex){
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     private void addNewAdminActionPerformed(){
         if(!rights.equals("Полные")) {
             JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
@@ -579,77 +817,154 @@ public class AdminFrame extends JFrame{
         }
     }
 
-//    private void addNewUserActionPerformed(){
-////        if(!rights.equals("Полные")) {
-////            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
-////            return;
-////        }
-//        if(!checkLogin(newUserLoginField.getText())) return;
-//        if(!checkPassword(newUserPasswordField1.getText(), newUserPasswordField2.getText())) return;
-//        try{
-//            User user = new User();
-//            user.setLogin(newUserLoginField.getText());
-//            user.setPassword(newUserPasswordField1.getText());
-//            user.setSurname(newUserSurnameField.getText());
-//            user.setName(newUserNameField.getText());
-//            user.setLastname(newUserLastnameField.getText());
-//            user.setPhone(newUserPhoneField.getText());
-//            //user.setWork_phone(newUserWorkPhoneField.getText());
-//            user.setRole("user");
-//            output.writeObject("insertUser");
-//            output.writeObject(user);
-//            String result = (String) input.readObject();
-//            JOptionPane.showMessageDialog(null, result, "Результат", JOptionPane.INFORMATION_MESSAGE);
-//            refreshData();
-//        }
-//        catch (Exception ex){
-//            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-//        }
-//    }
+    private void addNewTeacherActionPerformed(){
+        if(!rights.equals("Полные")) {
+            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(!checkLogin(newTeacherLoginField.getText())) return;
+        if(!checkPassword(newTeacherPasswordField1.getText(), newTeacherPasswordField2.getText())) return;
+        try{
+            Teacher teacher = new Teacher();
+            teacher.setLogin(newTeacherLoginField.getText());
+            teacher.setPassword(newTeacherPasswordField1.getText());
+            teacher.setSurname(newTeacherSurnameField.getText());
+            teacher.setName(newTeacherNameField.getText());
+            teacher.setPatronymic(newTeacherLastnameField.getText());
+            teacher.setPhone(newTeacherPhoneField.getText());
+            teacher.setEmail(newTeacherEmailField.getText());
+            teacher.setDepartment(String.valueOf( newTeacherDepartmentComboBox.getSelectedItem()));
+            teacher.setPost(String.valueOf(newTeacherPostComboBox.getSelectedItem()));
+            teacher.setRole("teacher");
+            output.writeObject("insertTeacher");
+            output.writeObject(teacher);
+            String result = (String) input.readObject();
+            JOptionPane.showMessageDialog(null, result, "Результат", JOptionPane.INFORMATION_MESSAGE);
+            refreshData();
+        }
+        catch (Exception ex){
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
-//    private void addNewDoctorButtonActionPerformed(){
-//        if(!rights.equals("Полные")) {
-//            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-//        if(!checkLogin(newDoctorLoginField.getText())) return;
-//        if(!checkPassword(newDoctorPasswordField1.getText(), newDoctorPasswordField2.getText())) return;
-//        if(newDoctorPostField.getText().equals("")){
-//            JOptionPane.showMessageDialog(null, "Вы не ввели должность врача!", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-//        if(newDoctorRoomField.getText().equals("")){
-//            JOptionPane.showMessageDialog(null, "Вы не ввели приемный кабинет!", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-//        if(newDoctorDistrictField.getText().equals("")){
-//            JOptionPane.showMessageDialog(null, "Вы не ввели участок!", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-//        try{
-//            Doctor doctor = new Doctor();
-//            doctor.setLogin(newDoctorLoginField.getText());
-//            doctor.setPassword(newDoctorPasswordField1.getText());
-//            doctor.setPost(newDoctorPostField.getText());
-//            doctor.setRoom(newDoctorRoomField.getText());
-//            doctor.setDistrict(newDoctorDistrictField.getText());
-//            doctor.setSurname(newDoctorSurnameField.getText());
-//            doctor.setName(newDoctorNameField.getText());
-//            doctor.setLastname(newDoctorLastnameField.getText());
-//            doctor.setPhone(newDoctorPhoneField.getText());
-//            doctor.setWork_phone(newDoctorWorkPhoneField.getText());
-//            doctor.setRole("doctor");
-//            output.writeObject("insertDoctor");
-//            output.writeObject(doctor);
-//            String result = (String) input.readObject();
-//            JOptionPane.showMessageDialog(null, result, "Результат", JOptionPane.INFORMATION_MESSAGE);
-//            refreshData();
-//        }
-//        catch (Exception ex){
-//            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-//        }
-//    }
+    private void addNewStudentButtonActionPerformed(){
+        if(!rights.equals("Полные")) {
+            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(!checkLogin(newStudentLoginField.getText())) return;
+        if(!checkPassword(newStudentPasswordField1.getText(), newStudentPasswordField2.getText())) return;
+        if(newStudentSurnameField.getText().equals("")){
+            JOptionPane.showMessageDialog(null, "Вы не ввели фамилию студента!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(newStudentNameField.getText().equals("")){
+            JOptionPane.showMessageDialog(null, "Вы не ввели имя студента!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(newStudentPatronymicField.getText().equals("")){
+            JOptionPane.showMessageDialog(null, "Вы не ввели отчество студента!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(newStudentDOBField.getText().equals("")){
+            JOptionPane.showMessageDialog(null, "Вы не ввели дату рождения студента!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(newStudentSpecialityField.getText().equals("") && newStudentFacultyField.getText().equals("")){
+            JOptionPane.showMessageDialog(null, "Вы не выбрали группу студента!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try{
+            Student student = new Student();
+            String dateRegex = "\\d{4}-\\d{2}-\\d{2}"; // Регулярное выражение для формата год-месяц-день
+            String inputDate = newStudentDOBField.getText();
 
+            if (inputDate.matches(dateRegex)) {
+                String[] dateParts = inputDate.split("-");
+                int year = Integer.parseInt(dateParts[0]);
+                int month = Integer.parseInt(dateParts[1]);
+                int day = Integer.parseInt(dateParts[2]);
+
+                if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >=  1) {
+                    student.setDOB(inputDate);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Вы не правильно ввели дату рождения студента!\nВводите дату в формате (год-месяц-день)", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Вы не правильно ввели дату рождения студента!\nВводите дату в формате (год-месяц-день)", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            student.setSurname(newStudentSurnameField.getText());
+            student.setName(newStudentNameField.getText());
+            student.setPatronymic(newStudentPatronymicField.getText());
+            student.setLogin(newStudentLoginField.getText());
+            student.setPassword(newStudentPasswordField1.getText());
+            student.setNumberOfGroup(Integer.parseInt(newStudentGroupComboBox.getSelectedItem().toString()));
+            student.setFacultyName(newStudentFacultyField.getText());
+            student.setSpecialityName(newStudentSpecialityField.getText());
+            student.setAddress(newStudentAddressField.getText());
+            if(String.valueOf(newStudentFOEComboBox.getSelectedItem()).equals("Бюджетная")){
+                student.setFormOfEducation(0);
+            }
+            if(String.valueOf(newStudentFOEComboBox.getSelectedItem()).equals("Платная")){
+                student.setFormOfEducation(1);
+            }
+            student.setDOB(newStudentDOBField.getText());
+            student.setPhone(newStudentPhoneField.getText());
+            student.setEmail(newStudentEmailField.getText());
+            student.setGroupId(group_id);
+            student.setRole("student");
+            output.writeObject("insertStudent");
+            output.writeObject(student);
+            String result = (String) input.readObject();
+            JOptionPane.showMessageDialog(null, result, "Результат", JOptionPane.INFORMATION_MESSAGE);
+            refreshData();
+        }
+        catch (Exception ex){
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void addNewSubjectActionPerformed(){
+        if(!rights.equals("Полные")) {
+            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try{
+            Subject subject = new Subject();
+            subject.setSubjectName(newSubjectNameField.getText());
+            output.writeObject("insertSubject");
+            output.writeObject(subject);
+            String result = (String) input.readObject();
+            JOptionPane.showMessageDialog(null, result, "Результат", JOptionPane.INFORMATION_MESSAGE);
+            refreshData();
+        }
+        catch (Exception ex){
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void addNewGroupActionPerformed(){
+        if(!rights.equals("Полные")) {
+            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try{
+            Group group = new Group();
+            group.setNumberOfGroup(Integer.parseInt(newGroupNumberField.getText()));
+            group.setSpecialityName(String.valueOf(newGroupSpecialityComboBox.getSelectedItem()));
+            group.setFacultyName(newGroupFacultyField.getText());
+            output.writeObject("insertGroup");
+            output.writeObject(group);
+            String result = (String) input.readObject();
+            JOptionPane.showMessageDialog(null, result, "Результат", JOptionPane.INFORMATION_MESSAGE);
+            refreshData();
+        }
+        catch (Exception ex){
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     private void clearNewAdminFormActionPerformed(){
         newAdminLoginField.setText("");
@@ -664,31 +979,45 @@ public class AdminFrame extends JFrame{
         newAdminEmailField.setText("");
     }
 
-    private void clearNewUserFormActionPerformed(){
-        newUserLoginField.setText("");
-        newUserPasswordField1.setText("");
-        newUserPasswordField2.setText("");
-        newUserSurnameField.setText("");
-        newUserNameField.setText("");
-        newUserLastnameField.setText("");
-        newUserPhoneField.setText("");
-        newUserWorkPhoneField.setText("");
+    private void clearNewTeacherFormActionPerformed(){
+        newTeacherLoginField.setText("");
+        newTeacherSurnameField.setText("");
+        newTeacherNameField.setText("");
+        newTeacherLastnameField.setText("");
+        newTeacherPhoneField.setText("");
+        newTeacherEmailField.setText("");
+        newTeacherPasswordField1.setText("");
+        newTeacherPasswordField2.setText("");
+        newTeacherPostComboBox.setSelectedIndex(0);
+        newTeacherDepartmentComboBox.setSelectedIndex(0);
     }
 
-    private void clearNewDoctorFormActionPerformed(){
-        newDoctorLoginField.setText("");
-        newDoctorPasswordField1.setText("");
-        newDoctorPasswordField2.setText("");
-        newDoctorPostField.setText("");
-        newDoctorRoomField.setText("");
-        newDoctorDistrictField.setText("");
-        newDoctorSurnameField.setText("");
-        newDoctorNameField.setText("");
-        newDoctorLastnameField.setText("");
-        newDoctorPhoneField.setText("");
-        newDoctorWorkPhoneField.setText("");
+    private void clearNewStudentFormActionPerformed(){
+        newStudentSurnameField.setText("");
+        newStudentNameField.setText("");
+        newStudentPatronymicField.setText("");
+        newStudentLoginField.setText("");
+        newStudentPasswordField1.setText("");
+        newStudentPasswordField2.setText("");
+
+        newStudentAddressField.setText("");
+        newStudentDOBField.setText("");
+        newStudentPhoneField.setText("");
+        newStudentEmailField.setText("");
+        newStudentFacultyField.setText("");
+        newStudentSpecialityField.setText("");
+        newStudentGroupComboBox.setSelectedIndex(0);
+        newStudentFOEComboBox.setSelectedIndex(0);
     }
 
+    private void clearNewGroupFormActionPerformed(){
+        newGroupNumberField.setText("");
+        newGroupFacultyField.setText("");
+        newGroupSpecialityComboBox.setSelectedIndex(0);
+    }
+    private void clearNewSubjectFormActionPerformed(){
+        newSubjectNameField.setText("");
+    }
 
     private void deleteAdminActionPerformed(){
         if(!rights.equals("Полные")) {
@@ -717,36 +1046,108 @@ public class AdminFrame extends JFrame{
         deleteAdminCheckBox.setSelected(false);
     }
 
-//    private void deleteUserActionPerformed(){
-////        if(!rights.equals("Полные")) {
-////            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
-////            return;
-////        }
-//        try{
-//            if(deleteUserCheckBox.isSelected()){
-//                User user = users.get(tableUsers.getSelectedRow());
-//                if(user.getId() != USER_ID){
-//                    output.writeObject("deleteUser");
-//                    output.writeObject(user);
-//                    String result = (String) input.readObject();
-//                    JOptionPane.showMessageDialog(null, result, "Результат", JOptionPane.INFORMATION_MESSAGE);
-//                    refreshData();
-//                    clearEditAndPasswordForm();
-//                }
-//                else{
-//                    JOptionPane.showMessageDialog(null, "Вы не можете удалить свою учетную запись!", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//                }
-//            }
-//        }
-//        catch (Exception ex){
-//            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-//        }
-//    }
+    private void deleteStudentActionPerformed(){
+        if(!rights.equals("Полные")) {
+            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try{
+            if(deleteStudentCheckBox.isSelected()){
+                try{
+                    Student student = students.get(tableStudents.getSelectedRow());
+                    output.writeObject("deleteStudent");
+                    output.writeObject(student);
+                    String result = (String) input.readObject();
+                    JOptionPane.showMessageDialog(null, result, "Результат", JOptionPane.INFORMATION_MESSAGE);
+                }catch (Exception e){
+                    JOptionPane.showMessageDialog(null, "Вы не выбрали запись для удаления!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
+                refreshData();
+                clearEditAndPasswordForm();
+            }
+        }
+        catch (Exception ex){
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
+    private void deleteTeacherActionPerformed(){
+        if(!rights.equals("Полные")) {
+            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try{
+            if(deleteTeacherCheckBox.isSelected()) {
+                try {
+                    Teacher teacher = teachers.get(tableTeachers.getSelectedRow());
+                    System.out.println(teacher.getSurname());
+                    output.writeObject("deleteTeacher");
+                    output.writeObject(teacher);
+                    String result = (String) input.readObject();
+                    JOptionPane.showMessageDialog(null, result, "Результат", JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Вы не выбрали запись для удаления!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
+                refreshData();
+                clearEditAndPasswordForm();
+            }
+        }
+        catch (Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
+    private void deleteSubjectActionPerformed(){
+        if(!rights.equals("Полные")) {
+            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try{
+            if(deleteSubjectCheckBox.isSelected()){
+                try{
+                    Subject subject = subjects.get(tableSubjects.getSelectedRow());
+                    output.writeObject("deleteSubject");
+                    output.writeObject(subject);
+                    String result = (String) input.readObject();
+                    JOptionPane.showMessageDialog(null, result, "Результат", JOptionPane.INFORMATION_MESSAGE);
+                }
+                catch (Exception e){
+                    JOptionPane.showMessageDialog(null, "Вы не выбрали предмет для удаления!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
+                refreshData();
+                clearEditAndPasswordForm();
+            }
+        }
+        catch (Exception ex){
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
-
-
+    private void deleteGroupActionPerformed(){
+        if(!rights.equals("Полные")) {
+            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try{
+            if(deleteGroupCheckBox.isSelected()){
+                try{
+                    Group group = groups.get(tableGroups.getSelectedRow());
+                    output.writeObject("deleteGroup");
+                    output.writeObject(group);
+                    String result = (String) input.readObject();
+                    JOptionPane.showMessageDialog(null, result, "Результат", JOptionPane.INFORMATION_MESSAGE);
+                }
+                catch (Exception e){
+                    JOptionPane.showMessageDialog(null, "Вы не выбрали группу для удаления!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
+                refreshData();
+                clearEditAndPasswordForm();
+            }
+        }
+        catch (Exception ex){
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 //    private void statsAdminBlockActionPerformed(){
 //        int notBlock = 0;
 //        int block = 0;
@@ -761,20 +1162,20 @@ public class AdminFrame extends JFrame{
 //        MainFrame.createGraph(dataSet, "Статистика блокированных/не блокированных администраторов");
 //    }
 //
-//    private void statsAdminRightsActionPerformed(){
-//        int full = 0;
-//        int read = 0;
-//        for(int i = 0; i < admins.size(); i++){
-//            if(admins.get(i).getRights().equals("Полные")) full++;
-//            else read++;
-//        }
-//        DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
-//        dataSet.setValue(full, "", "Полные");
-//        dataSet.setValue(read, "", "Чтение");
-//
-//        MainFrame.createGraph(dataSet, "Статистика прав доступа");
-//    }
-//
+    private void statsAdminRightsActionPerformed(){
+        int full = 0;
+        int read = 0;
+        for(int i = 0; i < admins.size(); i++){
+            if(admins.get(i).getRights().equals("Полные")) full++;
+            else read++;
+        }
+        DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
+        dataSet.setValue(full, "", "Полные");
+        dataSet.setValue(read, "", "Чтение");
+
+        MainFrame.createGraph(dataSet, "Статистика прав доступа");
+    }
+
 
 
     private void editAdminActionPerformed(){
@@ -817,77 +1218,177 @@ public class AdminFrame extends JFrame{
         }
     }
 
-//    private void editUserActionPerformed(){
-////        if(!rights.equals("Полные")) {
-////            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
-////            return;
-////        }
-//        try {
-//            User user;
-//            try {
-//                user = users.get(tableUsers.getSelectedRow());
-//                if(!editUserLoginField.getText().equals(user.getLogin())){
-//                    if(!checkLogin(editUserLoginField.getText())) return;
-//                }
-//                user.setLogin(editUserLoginField.getText());
-//                user.setSurname(editUserSurnameField.getText());
-//                user.setName(editUserNameField.getText());
-//                user.setLastname(editUserLastnameField.getText());
-//                user.setPhone(editUserPhoneField.getText());
-//                //user.setWork_phone(editUserWorkPhoneField.getText());
-//            }
-//            catch (Exception ex){
-//                JOptionPane.showMessageDialog(null, "Нужно выбрать пользователя из списка!" , "Ошибка", JOptionPane.ERROR_MESSAGE);
-//                return;
-//            }
-//            output.writeObject("updateUser");
-//            output.writeObject(user);
-//            JOptionPane.showMessageDialog(null, input.readObject(), "Результат", JOptionPane.INFORMATION_MESSAGE);
-//            refreshData();
-//            clearEditAndPasswordForm();
-//        } catch (Exception ex) {
-//            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-//        }
-//    }
+    private void editTeacherActionPerformed(){
+        if(!rights.equals("Полные")) {
+            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try {
+            Teacher teacher;
+            try {
+                teacher = teachers.get(tableTeachers.getSelectedRow());
+                if(!editTeacherLoginField.getText().equals(teacher.getLogin())){
+                    if(!checkLogin(editTeacherLoginField.getText())) return;
+                }
+                teacher.setLogin(editTeacherLoginField.getText());
+                teacher.setSurname(editTeacherSurnameField.getText());
+                teacher.setName(editTeacherNameField.getText());
+                teacher.setPatronymic(editTeacherLastnameField.getText());
+                teacher.setPhone(editTeacherPhoneField.getText());
+                teacher.setEmail(editTeacherEmailField.getText());
+                teacher.setDepartment((String)editTeacherDepartmentComboBox.getSelectedItem());
+                teacher.setPost((String)editTeacherPostComboBox.getSelectedItem());
+//                teacher.setDepartment(String.valueOf( newTeacherDepartmentComboBox.getSelectedItem()));
+//                teacher.setPost(String.valueOf( newTeacherPostComboBox.getSelectedItem()));
+            }
+            catch (Exception ex){
+                JOptionPane.showMessageDialog(null, "Нужно выбрать преподавателя из списка!" , "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            output.writeObject("updateTeacher");
+            output.writeObject(teacher);
+            JOptionPane.showMessageDialog(null, input.readObject(), "Результат", JOptionPane.INFORMATION_MESSAGE);
+            refreshData();
+            clearEditAndPasswordForm();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
-//    private void editDoctorActionPerformed(){
-//        if(!rights.equals("Полные")) {
-//            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-//        try{
-//            Doctor doctor;
-//            try{
-//                doctor = doctors.get(tableDoctors.getSelectedRow());
-//                if(!editDoctorLoginField.getText().equals(doctor.getLogin())){
-//                    if(!checkLogin(editDoctorLoginField.getText())) return;
-//                }
-//                doctor.setLogin(editDoctorLoginField.getText());
-//                doctor.setPost(editDoctorPostField.getText());
-//                doctor.setRoom(editDoctorRoomField.getText());
-//                doctor.setDistrict(editDoctorDistrictField.getText());
-//                doctor.setSurname(editDoctorSurnameField.getText());
-//                doctor.setName(editDoctorNameField.getText());
-//                doctor.setLastname(editDoctorLastnameField.getText());
-//                doctor.setPhone(editDoctorPhoneField.getText());
-//                doctor.setWork_phone(editDoctorWorkPhoneField.getText());
-//            }
-//            catch (Exception ex){
-//                JOptionPane.showMessageDialog(null, "Нужно выбрать доктора из списка!" , "Ошибка", JOptionPane.ERROR_MESSAGE);
-//                return;
-//            }
-//            output.writeObject("updateDoctor");
-//            output.writeObject(doctor);
-//            JOptionPane.showMessageDialog(null, input.readObject(), "Результат", JOptionPane.INFORMATION_MESSAGE);
-//            refreshData();
-//            clearEditAndPasswordForm();
-//        } catch (Exception ex) {
-//            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-//        }
-//    }
+    private void editStudentActionPerformed(){
+        if(!rights.equals("Полные")) {
+            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(editStudentSurnameField.getText().equals("")){
+            JOptionPane.showMessageDialog(null, "Вы не ввели фамилию студента!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(editStudentNameField.getText().equals("")){
+            JOptionPane.showMessageDialog(null, "Вы не ввели имя студента!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(editStudentLastnameField.getText().equals("")){
+            JOptionPane.showMessageDialog(null, "Вы не ввели отчество студента!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(editStudentDOBField.getText().equals("")){
+            JOptionPane.showMessageDialog(null, "Вы не ввели дату рождения студента!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(editStudentSpecialityField.getText().equals("") && editStudentFacultyField.getText().equals("")){
+            JOptionPane.showMessageDialog(null, "Вы не выбрали группу студента!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try{
+            Student student;
+            student = students.get(tableStudents.getSelectedRow());
+            if(!editStudentLoginField.getText().equals(student.getLogin())){
+                if(!checkLogin(editStudentLoginField.getText())) return;
+            }
+            String dateRegex = "\\d{4}-\\d{2}-\\d{2}"; // Регулярное выражение для формата год-месяц-день
+            String inputDate = editStudentDOBField.getText();
 
+            if (inputDate.matches(dateRegex)) {
+                String[] dateParts = inputDate.split("-");
+                int year = Integer.parseInt(dateParts[0]);
+                int month = Integer.parseInt(dateParts[1]);
+                int day = Integer.parseInt(dateParts[2]);
 
+                if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >=  1) {
+                    student.setDOB(editStudentDOBField.getText());
+                } else {
+                    JOptionPane.showMessageDialog(null, "Вы не правильно ввели дату рождения студента!\nВводите дату в формате (год-месяц-день)", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Вы не правильно ввели дату рождения студента!\nВводите дату в формате (год-месяц-день)", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            try{
+                student.setLogin(editStudentLoginField.getText());
+                student.setSurname(editStudentSurnameField.getText());
+                student.setName(editStudentNameField.getText());
+                student.setPatronymic(editStudentLastnameField.getText());
+                student.setPhone(editStudentPhoneField.getText());
+                student.setAddress(editStudentAddressField.getText());
+                student.setEmail(editStudentEmailField.getText());
+                student.setSpecialityName(editStudentSpecialityField.getText());
+                student.setFacultyName(editStudentFacultyField.getText());
+                student.setNumberOfGroup(Integer.parseInt(newStudentGroupComboBox.getSelectedItem().toString()));
+                student.setGroupId(group_id);
+                if(String.valueOf(editStudentFOEComboBox.getSelectedItem()).equals("Бюджетная")){
+                    student.setFormOfEducation(0);
+                }
+                if(String.valueOf(editStudentFOEComboBox.getSelectedItem()).equals("Платная")){
+                    student.setFormOfEducation(1);
+                }
+            }
+            catch (Exception ex){
+                JOptionPane.showMessageDialog(null, "Нужно выбрать студента из списка!" , "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            output.writeObject("updateStudent");
+            output.writeObject(student);
+            JOptionPane.showMessageDialog(null, input.readObject(), "Результат", JOptionPane.INFORMATION_MESSAGE);
+            refreshData();
+            clearEditAndPasswordForm();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
+    private void editSubjectActionPerformed(){
+        if(!rights.equals("Полные")) {
+            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try {
+            Subject subject;
+            try {
+                subject = subjects.get(tableSubjects.getSelectedRow());
+                subject.setSubjectName(editSubjectNameField.getText());
+            }
+            catch (Exception ex){
+                JOptionPane.showMessageDialog(null, "Нужно выбрать предмет из списка!" , "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            output.writeObject("updateSubject");
+            output.writeObject(subject);
+            JOptionPane.showMessageDialog(null, input.readObject(), "Результат", JOptionPane.INFORMATION_MESSAGE);
+            refreshData();
+            clearEditAndPasswordForm();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void editGroupActionPerformed(){
+        if(!rights.equals("Полные")) {
+            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try {
+            Group group;
+            try {
+                group = groups.get(tableGroups.getSelectedRow());
+                group.setNumberOfGroup(Integer.parseInt(editGroupNumberField.getText()));
+                group.setSpecialityName(String.valueOf(editGroupSpecialityComboBox.getSelectedItem()));
+                group.setFacultyName(editGroupFacultyField.getText());
+            }
+            catch (Exception ex){
+                JOptionPane.showMessageDialog(null, "Нужно выбрать группу из списка!" , "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            output.writeObject("updateGroup");
+            output.writeObject(group);
+            JOptionPane.showMessageDialog(null, input.readObject(), "Результат", JOptionPane.INFORMATION_MESSAGE);
+            refreshData();
+            clearEditAndPasswordForm();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     private void editAdminPasswordActionPerformed(){
         if(!rights.equals("Полные")) {
             JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
@@ -921,61 +1422,62 @@ public class AdminFrame extends JFrame{
         }
     }
 
-//    private void editUserPasswordActionPerformed(){
-////        if(!rights.equals("Полные")) {
-////            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
-////            return;
-////        }
-//        if(!checkPassword(editUserPasswordField1.getText(), editUserPasswordField2.getText())) return;
-//        try{
-//            User user;
-//            try {
-//                user = users.get(tableUsers.getSelectedRow());
-//            }
-//            catch (Exception ex){
-//                JOptionPane.showMessageDialog(null, "Нужно выбрать пользователя из списка!" , "Ошибка", JOptionPane.ERROR_MESSAGE);
-//                return;
-//            }
-//            user.setPassword(editUserPasswordField1.getText());
-//            output.writeObject("updatePassword");
-//            output.writeObject(user);
-//            JOptionPane.showMessageDialog(null, input.readObject(), "Результат", JOptionPane.INFORMATION_MESSAGE);
-//            refreshData();
-//            clearEditAndPasswordForm();
-//        }
-//        catch (Exception ex){
-//            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-//        }
-//    }
+    private void editTeacherPasswordActionPerformed(){
+        if(!rights.equals("Полные")) {
+            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(!checkPassword(editTeacherPasswordField1.getText(), editTeacherPasswordField2.getText())) return;
+        try{
+            Teacher teacher;
+            try {
+                teacher = teachers.get(tableTeachers.getSelectedRow());
+            }
+            catch (Exception ex){
+                JOptionPane.showMessageDialog(null, "Нужно выбрать пользователя из списка!" , "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            teacher.setPassword(editTeacherPasswordField1.getText());
+            output.writeObject("updatePassword");
+            output.writeObject(teacher);
+            JOptionPane.showMessageDialog(null, input.readObject(), "Результат", JOptionPane.INFORMATION_MESSAGE);
+            refreshData();
+            clearEditAndPasswordForm();
+        }
+        catch (Exception ex){
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
-//    private void editDoctorPasswordActionPerformed(){
-//        if(!rights.equals("Полные")) {
-//            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-//        if(!checkPassword(editDoctorPasswordField1.getText(), editDoctorPasswordField2.getText())) return;
-//        try{
-//            Doctor doctor;
-//            User user = new User();
-//            try {
-//                doctor = doctors.get(tableDoctors.getSelectedRow());
-//                user.setId(doctor.getUserId());
-//            }
-//            catch (Exception ex){
-//                JOptionPane.showMessageDialog(null, "Нужно выбрать врача из списка!" , "Ошибка", JOptionPane.ERROR_MESSAGE);
-//                return;
-//            }
-//            user.setPassword(editDoctorPasswordField1.getText());
-//            output.writeObject("updatePassword");
-//            output.writeObject(user);
-//            JOptionPane.showMessageDialog(null, input.readObject(), "Результат", JOptionPane.INFORMATION_MESSAGE);
-//            refreshData();
-//            clearEditAndPasswordForm();
-//        }
-//        catch (Exception ex){
-//            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-//        }
-//    }
+    private void editStudentPasswordActionPerformed(){
+        if(!rights.equals("Полные")) {
+            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(!checkPassword(editStudentPasswordField1.getText(), editStudentPasswordField2.getText())) return;
+        try{
+            Student student;
+            User user = new User();
+            try {
+                student = students.get(tableStudents.getSelectedRow());
+                user.setId(student.getUserId());
+            }
+            catch (Exception ex){
+                JOptionPane.showMessageDialog(null, "Нужно выбрать студента из списка!" , "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            user.setPassword(editStudentPasswordField1.getText());
+            output.writeObject("updatePassword");
+            output.writeObject(user);
+            JOptionPane.showMessageDialog(null, input.readObject(), "Результат", JOptionPane.INFORMATION_MESSAGE);
+            refreshData();
+            clearEditAndPasswordForm();
+        }
+        catch (Exception ex){
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
 
 //    private void editDoctorScheduleActionPerformed(){
 //        if(!rights.equals("Полные")) {
@@ -1024,29 +1526,6 @@ public class AdminFrame extends JFrame{
 //        }
 //    }
 
-//    private void deleteDoctorActionPerformed(){
-//        if(!rights.equals("Полные")) {
-//            JOptionPane.showMessageDialog(null, "Отказано в доступе", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-//        try{
-//            if(deleteDoctorCheckBox.isSelected()){
-//                try{
-//                    Doctor doctor = doctors.get(tableDoctors.getSelectedRow());
-//                    output.writeObject("deleteDoctor");
-//                    output.writeObject(doctor);
-//                    String result = (String) input.readObject();
-//                    JOptionPane.showMessageDialog(null, result, "Результат", JOptionPane.INFORMATION_MESSAGE);
-//                }catch (Exception e){
-//                    JOptionPane.showMessageDialog(null, "Вы не выбрали запись для удаления!", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//                }
-//                refreshData();
-//                clearEditAndPasswordForm();
-//            }
-//        }
-//        catch (Exception ex){
-//            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-//        }
-//    }
+
 
 }

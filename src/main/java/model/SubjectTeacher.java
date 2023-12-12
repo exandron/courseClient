@@ -2,12 +2,28 @@ package model;
 
 import java.io.Serializable;
 
-public class SubjectTeacher implements Serializable {
-    private int id;
-    private int teacherId;
-
+public class SubjectTeacher extends Teacher implements Serializable {
+    private int subjectTeacherId;
     private int subjectId;
+    private String subjectName;
 
+
+    public SubjectTeacher() {
+        this.subjectTeacherId = -1;
+        this.subjectId = -1;
+    }
+
+    public SubjectTeacher(int id, int subjectId) {
+        this.subjectTeacherId = id;
+        this.subjectId = subjectId;
+    }
+
+    public SubjectTeacher(int person_id, String surname, String name, String patronymic, String phone, String email, int user_id, String login, String password, String role, int teacherId, String post, String department, int subjectId, String subjectName, int subjectTeacherId) {
+        super(person_id, surname, name, patronymic, phone, email, user_id, login, password, role, teacherId, post, department);
+        this.subjectTeacherId = subjectTeacherId;
+        this.subjectId = subjectId;
+        this.subjectName = subjectName;
+    }
     public int getSubjectId() {
         return subjectId;
     }
@@ -16,31 +32,28 @@ public class SubjectTeacher implements Serializable {
         this.subjectId = subjectId;
     }
 
-    public int getTeacherId() {
-        return teacherId;
+    public int getSubjectTeacherId() {
+        return subjectTeacherId;
     }
 
-    public void setTeacherId(int teacherId) {
-        this.teacherId = teacherId;
+    public void setSubjectTeacherId(int subjectTeacherId) {
+        this.subjectTeacherId = subjectTeacherId;
     }
 
-    public SubjectTeacher() {
-        this.id = -1;
-        this.subjectId = -1;
-        this.teacherId = -1;
+    public String getSubjectName() {
+        return subjectName;
     }
 
-    public SubjectTeacher(int id, int teacherId, int subjectId) {
-        this.id = id;
-        this.teacherId = teacherId;
-        this.subjectId = subjectId;
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
     }
-
+    @Override
     public int getId() {
-        return id;
+        return super.getId();
     }
 
-    public void setId(int id) {
-        this.id = id;
+    @Override
+    public void setId(int teacherId) {
+        super.setId(teacherId);
     }
 }

@@ -62,7 +62,7 @@ public class StudentTableModel implements TableModel{
             case 1: return String.class;
             case 2: return String.class;
             case 3: return String.class;
-            case 4: return String.class;
+            case 4: return Integer.class;
             case 5: return String.class;
             case 6: return String.class;
             case 7: return String.class;

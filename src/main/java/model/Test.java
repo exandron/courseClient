@@ -4,21 +4,22 @@ import java.io.Serializable;
 
 public class Test extends Result implements Serializable {
     int id;
-    boolean isPassed;
+    String isPassed;
 
     private String subject;
 
     private String teacher;
+    private int subjectTeacherId;
 
     public Test() {
         super();
         this.id = -1;
-        this.isPassed = false;
+        this.isPassed = "";
         this.subject = "";
         this.teacher = "";
     }
 
-    public Test(int resultId, String date, int semester, int studentId, int subjectTeacherId, String subject, String teacher, int id, boolean isPassed) {
+    public Test(int resultId, String date, int semester, int studentId, int subjectTeacherId, String subject, String teacher, int id, String isPassed) {
         super(resultId, date, semester, studentId, subjectTeacherId);
         this.subject = subject;
         this.teacher = teacher;
@@ -35,12 +36,47 @@ public class Test extends Result implements Serializable {
     public void setId(int id) {
         this.id = id;
     }
+    @Override
+    public int getStudentId() {
+        return super.getStudentId();
+    }
+    @Override
+    public void setStudentId(int studentId) {
+        super.setStudentId(studentId);
+    }
+    @Override
+    public int getSemester() {
+        return super.getSemester();
+    }
+    @Override
+    public void setSemester(int semester) {
+        super.setSemester(semester);
+    }
+    @Override
+    public String getDate() {
+        return super.getDate();
+    }
+    @Override
+    public void setDate(String DOB) {
+        super.setDate(DOB);
+    }
 
-    public boolean isPassed() {
+    @Override
+    public int getSubjectTeacherId() {
+        return subjectTeacherId;
+    }
+
+    @Override
+    public void setSubjectTeacherId(int subjectTeacherId) {
+        this.subjectTeacherId = subjectTeacherId;
+    }
+
+
+    public String isPassed() {
         return isPassed;
     }
 
-    public void setPassed(boolean passed) {
+    public void setPassed(String passed) {
         isPassed = passed;
     }
     public String getSubject() {

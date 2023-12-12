@@ -1,22 +1,21 @@
 package tableModel;
 
+import model.Subject;
 import model.Teacher;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-public class TeacherTableModel implements TableModel{
-
+public class TeachersStudentTableModel implements TableModel{
     private Set<TableModelListener> listeners = new HashSet<TableModelListener>();
 
     private List<Teacher> teachers;
 
-    public TeacherTableModel(List<Teacher> teachers){
+    public TeachersStudentTableModel(List<Teacher> teachers){
         this.teachers = teachers;
     }
+
 
     @Override
     public int getRowCount() {
@@ -25,7 +24,7 @@ public class TeacherTableModel implements TableModel{
 
     @Override
     public int getColumnCount() {
-        return 9;
+        return 7;
     }
 
     @Override
@@ -40,14 +39,10 @@ public class TeacherTableModel implements TableModel{
             case 3:
                 return "Отчество";
             case 4:
-                return "Логин";
-            case 5:
-                return "Личный телефон";
-            case 6:
                 return "Почта";
-            case 7:
+            case 5:
                 return "Кафедра";
-            case 8:
+            case 6:
                 return "Должность";
         }
         return "";
@@ -63,8 +58,6 @@ public class TeacherTableModel implements TableModel{
             case 4: return String.class;
             case 5: return String.class;
             case 6: return String.class;
-            case 7: return String.class;
-            case 8: return String.class;
             default: return Object.class;
         }
     }
@@ -79,22 +72,18 @@ public class TeacherTableModel implements TableModel{
         Teacher teacher = teachers.get(rowIndex);
         switch (columnIndex){
             case 0:
-                return teacher.getUserId();
+                return teacher.getId();
             case 1:
-                return teacher.getSurname();
+               return teacher.getSurname();
             case 2:
                 return teacher.getName();
             case 3:
                 return teacher.getPatronymic();
             case 4:
-                return teacher.getLogin();
-            case 5:
-                return teacher.getPhone();
-            case 6:
                 return teacher.getEmail();
-            case 7:
+            case 5:
                 return teacher.getDepartment();
-            case 8:
+            case 6:
                 return teacher.getPost();
         }
         return null;

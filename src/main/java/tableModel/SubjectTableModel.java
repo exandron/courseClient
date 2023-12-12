@@ -1,45 +1,40 @@
 package tableModel;
 
-import model.Test;
+import model.Subject;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-public class TestTableModel implements TableModel{
+
+public class SubjectTableModel implements TableModel {
     private Set<TableModelListener> listeners = new HashSet<TableModelListener>();
 
-    private List<Test> tests;
+    private List<Subject> subjects;
 
-
-    public TestTableModel(List<Test> tests){
-        this.tests = tests;
+    public SubjectTableModel(List<Subject> subjects){
+        this.subjects = subjects;
     }
+
 
     @Override
     public int getRowCount() {
-        return tests.size();
+        return subjects.size();
     }
 
     @Override
     public int getColumnCount() {
-        return 5;
+        return 2;
     }
 
     @Override
     public String getColumnName(int columnIndex) {
         switch (columnIndex) {
             case 0:
-                return "Предмет";
+                return "ID";
             case 1:
-                return "Сдан/не сдан";
-            case 2:
-                return "Дата зачета";
-            case 3:
-                return "Преподаватель";
-            case 4:
-                return "Семестр";
+                return "Предмет";
         }
         return "";
     }
@@ -47,11 +42,8 @@ public class TestTableModel implements TableModel{
     @Override
     public Class<?> getColumnClass(int columnIndex) {
         switch (columnIndex) {
-            case 0: return String.class;
+            case 0: return Integer.class;
             case 1: return String.class;
-            case 2: return String.class;
-            case 3: return String.class;
-            case 4: return Integer.class;
             default: return Object.class;
         }
     }
@@ -63,18 +55,12 @@ public class TestTableModel implements TableModel{
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Test test = tests.get(rowIndex);
+        Subject subject = subjects.get(rowIndex);
         switch (columnIndex){
             case 0:
-                return test.getSubject();
+                return subject.getSubjectId();
             case 1:
-                return test.isPassed();
-            case 2:
-                return test.getDate();
-            case 3:
-                return test.getTeacher();
-            case 4:
-                return test.getSemester();
+                return subject.getSubjectName();
         }
         return null;
     }
@@ -94,4 +80,7 @@ public class TestTableModel implements TableModel{
         listeners.remove(listener);
     }
 
+    public void addRow(Subject subject){
+        subjects.add(subject);
+    }
 }

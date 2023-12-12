@@ -48,7 +48,7 @@ public class Result implements Serializable {
     }
 
     public void setDate(String DOB) {
-        this.date = date;
+        this.date = DOB;
     }
 
     public int getSemester() {
